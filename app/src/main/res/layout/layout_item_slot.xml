@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvSlot"
+    android:layout_width="70dp"
+    android:layout_height="70dp"
+    android:gravity="center"
+    android:text="A-01"
+    android:textSize="14sp"
+    android:textColor="#FFFFFF"
+    android:background="@drawable/bg_slot_available"
+    android:layout_margin="8dp" />

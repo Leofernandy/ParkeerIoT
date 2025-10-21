@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="12dp"
+    card_view:cardElevation="8dp"
+    android:layout_margin="15dp">
+
+    <LinearLayout
+        android:id="@+id/containerItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Header: Tanggal dan Harga -->
+        <LinearLayout
+            android:id="@+id/headerSection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/tvTanggalHeader"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="30 JUL 2025"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#444444"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvHargaPrefix"
+                android:layout_width="wrap_content"
+                android:text="IDR "
+                android:textColor="#F44336"
+                android:textSize="12sp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvTotalHarga"
+                android:layout_width="wrap_content"
+                android:text="25,000.00"
+                android:textColor="#F44336"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Dotted Line -->
+        <View
+            android:id="@+id/viewDottedLine1"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/dotted_line"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Mall info & Time -->
+        <LinearLayout
+            android:id="@+id/bodySection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <!-- Mall info -->
+            <LinearLayout
+                android:id="@+id/mallInfoSection"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvMallName"
+                    android:text="Delipark Mall"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#444444"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/tvPlate"
+                    android:text="BK 1234 ABC"
+                    android:textSize="13sp"
+                    android:textColor="#888888"
+                    android:layout_marginTop="4dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- Time info -->
+            <LinearLayout
+                android:id="@+id/timeInfoSection"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:gravity="end">
+
+                <!-- IN TIME -->
+                <LinearLayout
+                    android:id="@+id/inTimeSection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="12dp">
+
+                    <TextView
+                        android:id="@+id/tvLabelInTime"
+                        android:text="IN TIME"
+                        android:textStyle="italic"
+                        android:textSize="12sp"
+                        android:textColor="#666666"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvJamMasuk"
+                        android:text="17:30"
+                        android:textStyle="bold"
+                        android:textColor="#444444"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvTglMasuk"
+                        android:text="30 JUL 2025"
+                        android:textSize="12sp"
+                        android:textColor="#F44336"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <!-- OUT TIME -->
+                <LinearLayout
+                    android:id="@+id/outTimeSection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelOutTime"
+                        android:text="OUT TIME"
+                        android:textStyle="italic"
+                        android:textSize="12sp"
+                        android:textColor="#666666"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvJamKeluar"
+                        android:text="21:30"
+                        android:textStyle="bold"
+                        android:textColor="#444444"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvTglKeluar"
+                        android:text="30 JUL 2025"
+                        android:textSize="12sp"
+                        android:textColor="#F44336"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Dotted Line -->
+        <View
+            android:id="@+id/viewDottedLine2"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/dotted_line"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Expired label -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:text="EXPIRED"
+            android:textColor="#F44336"
+            android:background="@drawable/expired_outline"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:layout_marginStart="12dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

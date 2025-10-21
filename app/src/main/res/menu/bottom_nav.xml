@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Home"
+        android:id="@+id/home"
+        android:icon="@drawable/home"/>
+    <item android:title="Activity"
+        android:id="@+id/nav_activity"
+        android:icon="@drawable/activity"/>
+    <item android:title="Wallet"
+        android:id="@+id/wallet"
+        android:icon="@drawable/wallet"/>
+    <item android:title="Profile"
+        android:id="@+id/profile"
+        android:icon="@drawable/profile"/>
+</menu>

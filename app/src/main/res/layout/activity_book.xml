@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BookActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:background="@color/white"
+        android:orientation="vertical"></LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="889dp"
+        android:paddingTop="20dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
+
+        <LinearLayout
+            android:layout_width="319dp"
+            android:layout_height="23dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imvLeftArrow"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
+                android:src="@drawable/leftarrow"></ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-4dp"
+                android:layout_marginLeft="110dp"
+                android:textSize="24dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:text="Book" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imvBgMall"
+            android:layout_width="match_parent"
+            android:layout_height="188dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="17dp"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"
+            android:src="@drawable/bgdelipark" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="-57dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_gravity="center_horizontal"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="6dp"
+                android:layout_width="369dp"
+                android:layout_height="97dp"
+                android:layout_marginTop="10dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="12.5dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="172dp"
+                        android:layout_height="72dp"
+                        android:paddingHorizontal="6dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txMallName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Delipark Mall"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="18dp"></TextView>
+
+                        <TextView
+                            android:id="@+id/tvMallAddress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Jl. Putri Hijau No. 1 \nKota Medan"
+                            android:textColor="@color/black"
+                            android:textSize="12dp"></TextView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="172dp"
+                        android:layout_height="72dp"
+                        android:paddingHorizontal="6dp"
+
+                        android:orientation="vertical"
+                        android:gravity="right">
+                        <TextView
+                            android:id="@+id/tvMallPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="IDR 5000/HR"
+                            android:textColor="#00D40B"
+                            android:textSize="14dp"></TextView>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:gravity="right"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="12dp"
+                                android:layout_height="12dp"
+                                android:layout_marginTop="2dp"
+                                android:src="@drawable/nav"></ImageView>
+
+                            <TextView
+                                android:id="@+id/tvMallDistance"
+                                android:layout_width="wrap_content"
+                                android:layout_height="16dp"
+                                android:layout_marginLeft="5dp"
+                                android:text="4.7 km"
+                                android:textColor="@color/black"
+                                android:textSize="12dp"></TextView>
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/txvPlate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vehicles Plate"
+                android:textColor="@color/black"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="369dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp">
+
+                <Spinner
+                    android:id="@+id/sprPlate"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:background="@android:color/transparent"/>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/txvArrive"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:text="Arrive After" />
+
+            <LinearLayout
+                android:layout_width="377dp"
+                android:layout_height="55dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                >
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="180dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="4dp"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="4dp">
+
+                    <EditText
+                        android:id="@+id/edtTglMsk"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="12dp"
+                        android:hint="Select Date"
+                        android:background="@android:color/transparent"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:textSize="14dp"/>
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="180dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="4dp">
+
+                    <EditText
+                        android:id="@+id/edtJamMsk"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="12dp"
+                        android:hint="Select Time"
+                        android:background="@android:color/transparent"
+                        android:textSize="14dp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txvExit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:text="Exit Before" />
+
+            <LinearLayout
+                android:layout_width="377dp"
+                android:layout_height="55dp"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="180dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="4dp"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="4dp">
+
+                    <EditText
+                        android:id="@+id/edtTglKlr"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="12dp"
+                        android:hint="Select Date"
+                        android:background="@android:color/transparent"
+                        android:textSize="14dp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+                </androidx.cardview.widget.CardView>
+
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="180dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="4dp"
+                    app:cardCornerRadius="6dp"
+                    app:cardElevation="4dp">
+
+                    <EditText
+                        android:id="@+id/edtJamKlr"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="12dp"
+                        android:hint="Select Time"
+                        android:background="@android:color/transparent"
+                        android:textSize="14dp"
+                        android:clickable="false"
+                        android:focusable="false"/>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txvPickedSlot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:text="Parking Slot" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="369dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="4dp">
+                <TextView
+                    android:id="@+id/tvSelectedSlot"
+                    android:layout_width="369dp"
+                    android:layout_height="34dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="12dp"
+                    android:textSize="14dp"
+                    android:clickable="false"
+                    android:hint="A-00"
+                    android:textColor="@color/black"></TextView>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/txvSlot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pick Your Slot"
+                android:textColor="@color/black"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="25dp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="191dp">
+                <GridLayout
+                    android:id="@+id/gridSlotContainer"
+                    android:paddingBottom="35dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="15dp"
+                    android:columnCount="4"
+                    android:alignmentMode="alignMargins"
+                    android:layout_gravity="center"
+                    android:paddingHorizontal="16dp" />
+
+            </ScrollView>
+
+
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:orientation="vertical"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <Button
+            android:id="@+id/btnBook"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_width="369dp"
+            android:layout_height="55dp"
+            android:textStyle="bold"
+            android:textSize="17dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_edt"
+            android:text="BOOK">
+        </Button>
+
+        <TextView
+            android:id="@+id/txvTerms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="By paying, you agree to Parkeer’s Terms and Conditions"></TextView>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
