@@ -1,146 +1,123 @@
 package com.example.parkeeriotapp;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.*;
+import com.google.firebase.firestore.*;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import com.example.parkeeriotapp.model.User;
-
-import io.realm.Realm;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity {
 
-    EditText edtFullname, edtEmail, edtPhone, edtPassword;
-    TextView txvLinkLogin;
-    ImageView imvLeftArrow;
-    Button btnSignup;
+    private EditText edtFullname, edtEmail, edtPhone, edtPassword;
+    private CheckBox cbxTnC;
+    private Button btnSignup;
+    private TextView txvLinkLogin;
 
-    CheckBox cbxTnC;
-    Realm realm;
-
-
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_signup);
 
-        realm = Realm.getDefaultInstance();
+        // 🔧 Init Firebase
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-
+        // 🔧 Init UI
         edtFullname = findViewById(R.id.edtFullname);
         edtEmail = findViewById(R.id.edtEmail);
         edtPhone = findViewById(R.id.edtPhone);
         edtPassword = findViewById(R.id.edtPassword);
-        btnSignup = findViewById(R.id.btnSignup);
         cbxTnC = findViewById(R.id.cbxTnC);
+        btnSignup = findViewById(R.id.btnSignup);
+        txvLinkLogin = findViewById(R.id.txvLinkLogin);
 
+        // 🔗 Link ke Login
+        txvLinkLogin.setOnClickListener(v -> {
+            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+            finish();
+        });
 
+        // 🧩 Tombol Sign Up
         btnSignup.setOnClickListener(v -> {
-            String email = edtEmail.getText().toString().trim();
             String fullname = edtFullname.getText().toString().trim();
+            String email = edtEmail.getText().toString().trim();
             String phone = edtPhone.getText().toString().trim();
             String password = edtPassword.getText().toString().trim();
 
-            if (fullname.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Semua field harus diisi", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "Format email tidak valid", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (password.length() < 6) {
-                Toast.makeText(this, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (!phone.matches("[0-9]{10,15}")) {
-                Toast.makeText(this, "Nomor HP harus 10–15 digit angka", Toast.LENGTH_SHORT).show();
+            if (TextUtils.isEmpty(fullname) || TextUtils.isEmpty(email) || TextUtils.isEmpty(phone) || TextUtils.isEmpty(password)) {
+                Toast.makeText(SignupActivity.this, "Semua field harus diisi", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (!cbxTnC.isChecked()) {
-                Toast.makeText(this, "Harap setujui syarat dan ketentuan terlebih dahulu", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignupActivity.this, "Harap setujui Terms & Privacy Policy", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            User existing = realm.where(User.class).equalTo("email", email).findFirst();
-            if (existing != null) {
-                Toast.makeText(this, "Email sudah digunakan", Toast.LENGTH_SHORT).show();
+            if (password.length() < 6) {
+                Toast.makeText(SignupActivity.this, "Password minimal 6 karakter", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            try {
-                realm.executeTransaction(r -> {
-                    User user = r.createObject(User.class, email);
-                    user.setFullname(fullname);
-                    user.setPhone(phone);
-                    user.setPassword(password);
+            registerUser(fullname, email, phone, password);
+        });
+    }
+
+    private void registerUser(String fullname, String email, String phone, String password) {
+        btnSignup.setEnabled(false);
+        btnSignup.setText("Creating...");
+
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        btnSignup.setEnabled(true);
+                        btnSignup.setText("SIGN UP");
+
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = auth.getCurrentUser();
+                            if (user != null) {
+                                saveUserToFirestore(user.getUid(), fullname, email, phone);
+                            }
+                        } else {
+                            Toast.makeText(SignupActivity.this,
+                                    "Gagal daftar: " + task.getException().getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
                 });
-
-                Toast.makeText(this, "Signup berhasil", Toast.LENGTH_SHORT).show();
-
-                new android.os.Handler().postDelayed(() -> {
-                    finish(); // balik ke LoginActivity
-                }, 1000);
-
-            } catch (Exception e) {
-                Toast.makeText(this, "Gagal signup: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
-        imvLeftArrow = findViewById(R.id.imvLeftArrow);
-        imvLeftArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-
-        txvLinkLogin = findViewById(R.id.txvLinkLogin);
-
-        txvLinkLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toLogin();
-            }
-        });
     }
 
-    public void toLogin(){
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
+    private void saveUserToFirestore(String uid, String fullname, String email, String phone) {
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("fullname", fullname);
+        userData.put("email", email);
+        userData.put("phone", phone);
+        userData.put("balance", 0);
+        userData.put("createdAt", FieldValue.serverTimestamp());
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (realm != null && !realm.isClosed()) {
-            realm.close();
-        }
+        db.collection("users").document(uid)
+                .set(userData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(SignupActivity.this, "Akun berhasil dibuat!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(SignupActivity.this, "Gagal simpan data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
-
 }

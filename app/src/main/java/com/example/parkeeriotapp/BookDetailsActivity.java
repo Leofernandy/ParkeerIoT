@@ -12,11 +12,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.parkeeriotapp.model.Booking;
-import com.example.parkeeriotapp.model.SlotParkir;
 import com.example.parkeeriotapp.utils.UserSessionManager;
 
-import io.realm.Realm;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BookDetailsActivity extends AppCompatActivity {
     ImageView imvLeftArrow;
@@ -38,7 +37,6 @@ public class BookDetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String bookingId = intent.getStringExtra("bookingId");
         String mallName = intent.getStringExtra("mallName");
-        String mallAddress = intent.getStringExtra("mallAddress");
         String slot = intent.getStringExtra("slot");
         String plate = intent.getStringExtra("plate");
         String jamMasuk = intent.getStringExtra("jamMasuk");
@@ -69,76 +67,59 @@ public class BookDetailsActivity extends AppCompatActivity {
             Toast.makeText(this, "Receipt has been downloaded", Toast.LENGTH_SHORT).show();
 
             Intent navIntent = new Intent(this, MainActivity.class);
-            navIntent.putExtra("navigateTo", "activity"); // flag untuk tab ActivityFragment
+            navIntent.putExtra("navigateTo", "activity");
             navIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(navIntent);
-            finish(); // tutup halaman saat ini
+            finish();
         });
 
-        boolean isScanned = getSharedPreferences("qr_status", MODE_PRIVATE)
-                .getBoolean("scanned_" + bookingId, false);
+        Set<String> scannedSet = getSharedPreferences("qr_status", MODE_PRIVATE)
+                .getStringSet("scannedBookings", new HashSet<>());
 
-        if (readonly || qrScanned || isScanned) {
+        if (readonly || qrScanned || scannedSet.contains(bookingId)) {
             btnCancel.setEnabled(false);
             btnCancel.setAlpha(0.4f);
         } else {
             btnCancel.setEnabled(true);
         }
 
-
-        qrCode.setOnClickListener(v -> { // ⬅️ Tambahkan ini
+        qrCode.setOnClickListener(v -> {
             btnCancel.setEnabled(false);
             btnCancel.setAlpha(0.4f);
 
-            // Simpan flag kalau QR telah discan untuk booking ini
+            scannedSet.add(bookingId);
             getSharedPreferences("qr_status", MODE_PRIVATE)
                     .edit()
-                    .putBoolean("scanned_" + bookingId, true)
+                    .putStringSet("scannedBookings", scannedSet)
                     .apply();
         });
 
         btnCancel.setOnClickListener(v -> {
             if (qrScanned) return;
 
-            Realm realm = Realm.getDefaultInstance();
+            // Simulasi rollback saldo wallet
             UserSessionManager session = new UserSessionManager(this);
             String userEmail = session.getEmail();
+            int oldBalance = getSharedPreferences("wallet_" + userEmail, MODE_PRIVATE)
+                    .getInt("balance", 0);
+            int newBalance = oldBalance + totalHarga;
+            getSharedPreferences("wallet_" + userEmail, MODE_PRIVATE)
+                    .edit()
+                    .putInt("balance", newBalance)
+                    .apply();
+            session.setSaldo(newBalance);
 
-            realm.executeTransaction(r -> {
-                Booking booking = r.where(Booking.class).equalTo("bookingId", bookingId).findFirst();
-                if (booking != null) {
-                    // Kembalikan slot jadi available
-                    SlotParkir slotModel = r.where(SlotParkir.class)
-                            .equalTo("slotId", booking.getSlotId())
-                            .findFirst();
-                    if (slotModel != null) {
-                        slotModel.setBooked(false);
-                    }
+            // Simulasi slot kembali tersedia (dummy, bisa integrate ke BookActivity)
+            Toast.makeText(this, "Booking dibatalkan & saldo dikembalikan.", Toast.LENGTH_SHORT).show();
 
-                    // Kembalikan saldo ke wallet
-                    int oldBalance = getSharedPreferences("wallet_" + userEmail, MODE_PRIVATE)
-                            .getInt("balance", 0);
-                    int newBalance = oldBalance + booking.getTotalHarga();
-                    getSharedPreferences("wallet_" + userEmail, MODE_PRIVATE)
-                            .edit()
-                            .putInt("balance", newBalance)
-                            .apply();
+            // Hapus status QR
+            scannedSet.remove(bookingId);
+            getSharedPreferences("qr_status", MODE_PRIVATE)
+                    .edit()
+                    .putStringSet("scannedBookings", scannedSet)
+                    .apply();
 
-                    session.setSaldo(newBalance); // update di session juga
-
-                    // Hapus booking
-                    booking.deleteFromRealm();
-                    getSharedPreferences("qr_status", MODE_PRIVATE)
-                            .edit()
-                            .remove("scanned_" + bookingId)
-                            .apply();
-                    Toast.makeText(this, "Booking dibatalkan & saldo dikembalikan.", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            realm.close();
             finish();
         });
     }
-
 }

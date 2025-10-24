@@ -3,102 +3,122 @@ package com.example.parkeeriotapp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserSessionManager {
+
     private static final String PREF_NAME = "ParkeerPrefs";
-    public static final String KEY_EMAIL = "user_email";
-    private static final String KEY_FULLNAME = "user_fullname";
-    private static final String KEY_PHONE = "user_phone";
-    private static final String KEY_PASSWORD = "user_password"; // Optional
-    private static final String KEY_IS_LOGGED_IN = "is_logged_in";
-    private static final String KEY_SALDO = "user_saldo";
+    private static final String KEY_EMAILS = "registeredEmails";
+    private static final String KEY_FULLNAME_PREFIX = "fullname_";
+    private static final String KEY_PHONE_PREFIX = "phone_";
+    private static final String KEY_PASSWORD_PREFIX = "password_";
+    private static final String KEY_LOGGED_IN_EMAIL = "loggedInEmail";
+    private static final String KEY_SALDO_PREFIX = "saldo_";
 
-
-    SharedPreferences pref;
-    SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
+    private Context context;
 
     public UserSessionManager(Context context) {
-        pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        editor = pref.edit();
+        this.context = context;
+        prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        editor = prefs.edit();
     }
 
-    public void createLoginSession(String email, String fullname, String phone, String password) {
-        editor.putString(KEY_EMAIL, email);
-        editor.putString(KEY_FULLNAME, fullname);
-        editor.putString(KEY_PHONE, phone);
-        editor.putString(KEY_PASSWORD, password); // Optional
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
+    // ======= Registrasi =======
+    public boolean isEmailRegistered(String email) {
+        Set<String> emails = prefs.getStringSet(KEY_EMAILS, new HashSet<>());
+        return emails.contains(email);
+    }
+
+    public void registerUser(String email, String fullname, String phone, String password) {
+        Set<String> emails = new HashSet<>(prefs.getStringSet(KEY_EMAILS, new HashSet<>()));
+        emails.add(email);
+        editor.putStringSet(KEY_EMAILS, emails);
+        editor.putString(KEY_FULLNAME_PREFIX + email, fullname);
+        editor.putString(KEY_PHONE_PREFIX + email, phone);
+        editor.putString(KEY_PASSWORD_PREFIX + email, password);
+        editor.putInt(KEY_SALDO_PREFIX + email, 0); // saldo awal 0
         editor.apply();
     }
 
-    public String getEmail() {
-        return pref.getString(KEY_EMAIL, null);
+    // ======= Login / Logout =======
+    public boolean login(String email, String password) {
+        if (!isEmailRegistered(email)) return false;
+        String storedPassword = prefs.getString(KEY_PASSWORD_PREFIX + email, null);
+        if (storedPassword != null && storedPassword.equals(password)) {
+            editor.putString(KEY_LOGGED_IN_EMAIL, email);
+            editor.apply();
+            return true;
+        }
+        return false;
     }
 
-    public String getFullname() {
-        return pref.getString(KEY_FULLNAME, null);
-    }
-
-    public String getPhone() {
-        return pref.getString(KEY_PHONE, null);
-    }
-
-    public String getPassword() {
-        return pref.getString(KEY_PASSWORD, null);
+    public void logout() {
+        editor.remove(KEY_LOGGED_IN_EMAIL);
+        editor.apply();
     }
 
     public boolean isLoggedIn() {
-        return pref.getBoolean(KEY_IS_LOGGED_IN, false);
+        return prefs.contains(KEY_LOGGED_IN_EMAIL);
     }
 
-    public void setSaldo(int saldo) {
-        editor.putInt(KEY_SALDO, saldo);
-        editor.apply();
+    public String getLoggedInEmail() {
+        return prefs.getString(KEY_LOGGED_IN_EMAIL, null);
+    }
+
+    // ======= Ambil info user =======
+    public String getFullname() {
+        String email = getLoggedInEmail();
+        if (email == null) return null;
+        return prefs.getString(KEY_FULLNAME_PREFIX + email, null);
+    }
+
+    public String getPhone() {
+        String email = getLoggedInEmail();
+        if (email == null) return null;
+        return prefs.getString(KEY_PHONE_PREFIX + email, null);
+    }
+
+    public String getEmail() {
+        return getLoggedInEmail();
     }
 
     public int getSaldo() {
-        return pref.getInt(KEY_SALDO, 0);
+        String email = getLoggedInEmail();
+        if (email == null) return 0;
+        return prefs.getInt(KEY_SALDO_PREFIX + email, 0);
     }
 
-    public void clearSession() {
-        SharedPreferences.Editor editor = pref.edit();
-        editor.clear();
-        editor.apply();
+    public void setSaldo(int saldo) {
+        String email = getLoggedInEmail();
+        if (email != null) {
+            editor.putInt(KEY_SALDO_PREFIX + email, saldo);
+            editor.apply();
+        }
     }
 
-
-    public HashMap<String, String> getUserDetail() {
-        HashMap<String, String> user = new HashMap<>();
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
-        user.put(KEY_FULLNAME, pref.getString(KEY_FULLNAME, null));
-        user.put(KEY_PHONE, pref.getString(KEY_PHONE, null));
-        user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
-        return user;
+    // ======= Update profile =======
+    public void updateProfile(String fullname, String phone) {
+        String email = getLoggedInEmail();
+        if (email != null) {
+            editor.putString(KEY_FULLNAME_PREFIX + email, fullname);
+            editor.putString(KEY_PHONE_PREFIX + email, phone);
+            editor.apply();
+        }
     }
 
+    // ======= Dapatkan password user (opsional) =======
+    public String getPassword() {
+        String email = getLoggedInEmail();
+        if (email == null) return null;
+        return prefs.getString(KEY_PASSWORD_PREFIX + email, null);
+    }
+
+    // ======= Sync saldo (dummy, bisa dikembangkan) =======
     public void syncSaldoFromWallet(Context context) {
-        String email = getEmail();
-        if (email == null) return;
-
-        SharedPreferences walletPrefs = context.getSharedPreferences("wallet_" + email, Context.MODE_PRIVATE);
-        int saldo = walletPrefs.getInt("balance", 0);
-
-        setSaldo(saldo); // simpan ke session
+        // kalau ada logika topup/saldo dari server, bisa di sini
+        // untuk sekarang cukup pakai saldo di SharedPreferences
     }
-
-    public void refundToWallet(Context context, int amount) {
-        String email = getEmail();
-        if (email == null) return;
-
-        SharedPreferences walletPrefs = context.getSharedPreferences("wallet_" + email, Context.MODE_PRIVATE);
-        int currentBalance = walletPrefs.getInt("balance", 0);
-        walletPrefs.edit().putInt("balance", currentBalance + amount).apply();
-
-        // Update session saldo juga biar sinkron
-        setSaldo(currentBalance + amount);
-    }
-
-
-
 }

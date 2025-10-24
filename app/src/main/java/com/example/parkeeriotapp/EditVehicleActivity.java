@@ -11,18 +11,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 
-import com.example.parkeeriotapp.model.Vehicle;
-
-import io.realm.Realm;
-
 public class EditVehicleActivity extends AppCompatActivity {
 
     EditText edtPlate;
     Spinner sprBrand, sprModel, sprYear, sprColor;
     Button btnSave;
     TextView txvDelete;
-    Realm realm;
-    Vehicle currentVehicle;
+    // Realm sudah dihapus
+    // Vehicle currentVehicle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,53 +47,22 @@ public class EditVehicleActivity extends AppCompatActivity {
         sprYear.setAdapter(createHintedAdapter(R.array.year_array));
         sprColor.setAdapter(createHintedAdapter(R.array.color_array));
 
-        realm = Realm.getDefaultInstance();
-        String plate = getIntent().getStringExtra("plate");
-        if (plate != null) {
-            currentVehicle = realm.where(Vehicle.class).equalTo("plate", plate).findFirst();
-            if (currentVehicle != null) {
-                populateFields(currentVehicle);
-            }
-        }
+        // Populate field sementara
+        edtPlate.setText("AB123CD");
+        edtPlate.setEnabled(false);
+        sprBrand.setSelection(1);
+        sprModel.setSelection(1);
+        sprYear.setSelection(1);
+        sprColor.setSelection(1);
 
         btnSave.setOnClickListener(v -> {
-            realm.executeTransaction(r -> {
-                currentVehicle.setBrand(sprBrand.getSelectedItem().toString());
-                currentVehicle.setModel(sprModel.getSelectedItem().toString());
-                currentVehicle.setYear(sprYear.getSelectedItem().toString());
-                currentVehicle.setColor(sprColor.getSelectedItem().toString());
-            });
+            // sementara hanya menampilkan Toast
             Toast.makeText(this, "Kendaraan berhasil diperbarui", Toast.LENGTH_SHORT).show();
-            finish();
         });
 
         txvDelete.setOnClickListener(v -> {
-            realm.executeTransaction(r -> {
-                currentVehicle.deleteFromRealm();
-            });
             Toast.makeText(this, "Kendaraan dihapus", Toast.LENGTH_SHORT).show();
-            finish();
         });
-    }
-
-    private void populateFields(Vehicle vehicle) {
-        edtPlate.setText(vehicle.getPlate());
-        edtPlate.setEnabled(false); // tidak bisa ubah plate
-
-        setSpinnerSelection(sprBrand, vehicle.getBrand());
-        setSpinnerSelection(sprModel, vehicle.getModel());
-        setSpinnerSelection(sprYear, vehicle.getYear());
-        setSpinnerSelection(sprColor, vehicle.getColor());
-    }
-
-    private void setSpinnerSelection(Spinner spinner, String value) {
-        ArrayAdapter adapter = (ArrayAdapter) spinner.getAdapter();
-        for (int i = 0; i < adapter.getCount(); i++) {
-            if (adapter.getItem(i).toString().equalsIgnoreCase(value)) {
-                spinner.setSelection(i);
-                return;
-            }
-        }
     }
 
     private ArrayAdapter<CharSequence> createHintedAdapter(int arrayResId) {

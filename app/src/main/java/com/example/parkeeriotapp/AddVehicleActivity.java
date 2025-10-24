@@ -18,15 +18,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.parkeeriotapp.model.Vehicle;
 import com.example.parkeeriotapp.utils.UserSessionManager;
-
-import io.realm.Realm;
 
 public class AddVehicleActivity extends AppCompatActivity {
 
     Spinner sprBrand, sprModel , sprYear, sprColor;
-    Realm realm;
     ImageView imvLeftArrow;
 
     @Override
@@ -40,15 +36,14 @@ public class AddVehicleActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        imvLeftArrow= findViewById(R.id.imvLeftArrow);
+
+        imvLeftArrow = findViewById(R.id.imvLeftArrow);
         imvLeftArrow.setOnClickListener(v -> finish());
 
         sprBrand = findViewById(R.id.sprBrand);
         sprColor = findViewById(R.id.sprColor);
         sprModel = findViewById(R.id.sprModel);
         sprYear = findViewById(R.id.sprYear);
-
-        realm = Realm.getDefaultInstance();
 
         // Spinner dengan hint
         sprBrand.setAdapter(createHintedAdapter(R.array.brand_array));
@@ -77,23 +72,10 @@ public class AddVehicleActivity extends AppCompatActivity {
             UserSessionManager session = new UserSessionManager(this);
             String email = session.getEmail();
 
-            Vehicle existing = realm.where(Vehicle.class).equalTo("plate", plate).findFirst();
-
-            if (existing != null) {
-                Toast.makeText(this, "Plat nomor sudah terdaftar", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            realm.executeTransaction(r -> {
-                Vehicle vehicle = realm.createObject(Vehicle.class, plate);
-                vehicle.setBrand(brand);
-                vehicle.setModel(model);
-                vehicle.setYear(year);
-                vehicle.setColor(color);
-                vehicle.setOwnerEmail(email);
-            });
-
-            Toast.makeText(this, "Kendaraan berhasil ditambahkan", Toast.LENGTH_SHORT).show();
+            // ===== Placeholder untuk Realm =====
+            // Di sini sebelumnya ada kode pengecekan & penyimpanan ke Realm
+            // Kamu bisa ganti nanti dengan penyimpanan ke database lain atau Firebase
+            Toast.makeText(this, "Kendaraan berhasil ditambahkan (Realm dihapus)", Toast.LENGTH_SHORT).show();
             finish();
         });
     }

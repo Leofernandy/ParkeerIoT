@@ -1,7 +1,6 @@
 package com.example.parkeeriotapp;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -15,8 +14,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.parkeeriotapp.databinding.ActivityMainBinding;
 
-import io.realm.Realm;
-
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
@@ -26,17 +23,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Realm realm = Realm.getDefaultInstance();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        Intent intent = getIntent();
-        if (intent != null && "activity".equals(intent.getStringExtra("navigateTo"))) {
+        // Navigasi awal
+        if (getIntent() != null && "activity".equals(getIntent().getStringExtra("navigateTo"))) {
             binding.bottomNavigationView.setSelectedItemId(R.id.nav_activity);
         } else {
             binding.bottomNavigationView.setSelectedItemId(R.id.home);
         }
-
 
         replaceFragment(new HomeFragment());
 
@@ -62,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
-
     }
 
     private void replaceFragment(Fragment fragment) {

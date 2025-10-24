@@ -37,7 +37,7 @@
             android:name=".MyVehiclesActivity"
             android:exported="false" />
         <activity
-            android:name=".edit_profile"
+            android:name=".EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".BookDetailsActivity"

@@ -23,22 +23,12 @@ public class WalletFragment extends Fragment {
 
     private TextView txvSaldo, txvPhone;
     private ImageView imvTopup;
+    private SharedPreferences prefs;
 
-    SharedPreferences prefs;
+    public WalletFragment() {}
 
-    public WalletFragment() {
-    }
-
-    public static WalletFragment newInstance(String param1, String param2) {
-        WalletFragment fragment = new WalletFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public static WalletFragment newInstance() {
+        return new WalletFragment();
     }
 
     @Override
@@ -62,20 +52,30 @@ public class WalletFragment extends Fragment {
         imvTopup = view.findViewById(R.id.imvTopup);
 
         UserSessionManager session = new UserSessionManager(requireContext());
-        String email = session.getEmail();
+
+        // SharedPreferences untuk simpan saldo user
+        String email = session.getEmail() != null ? session.getEmail() : "guest";
         prefs = requireContext().getSharedPreferences("wallet_" + email, Context.MODE_PRIVATE);
 
-        String phone = session.getPhone();
-        if (phone != null && phone.length() >= 10) {
+        // Hardcode saldo awal 50.000 kalau belum ada
+        if (!prefs.contains("balance")) {
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("balance", 50000);
+            editor.apply();
+        }
+
+        // Tampilkan nomor HP (masking)
+        String phone = session.getPhone() != null ? session.getPhone() : "08123456789";
+        if (phone.length() >= 10) {
             String masked = phone.substring(0, 2) + "******" + phone.substring(phone.length() - 2);
             txvPhone.setText(masked);
         } else {
-            txvPhone.setText(phone != null ? phone : "-");
+            txvPhone.setText(phone);
         }
 
         updateBalance();
 
-        imvTopup.setOnClickListener(v1 -> {
+        imvTopup.setOnClickListener(v -> {
             int currentBalance = prefs.getInt("balance", 0);
             int newBalance = currentBalance + 10000;
 
@@ -90,10 +90,8 @@ public class WalletFragment extends Fragment {
         });
     }
 
-
     private void updateBalance() {
-        UserSessionManager session = new UserSessionManager(requireContext());
-        int balance = session.getSaldo();
+        int balance = prefs.getInt("balance", 0);
         txvSaldo.setText("IDR " + String.format("%,d", balance).replace(',', '.'));
     }
 }

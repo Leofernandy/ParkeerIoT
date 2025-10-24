@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
-apply(plugin = "realm-android")
 
 android {
     namespace = "com.example.parkeeriotapp"
@@ -44,9 +44,10 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation ("com.google.android.material:material:1.10.0")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.android.gms:play-services-maps:18.2.0")
-    implementation("io.realm:realm-android-library:10.15.1")
 }

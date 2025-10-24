@@ -134,7 +134,7 @@ public class ProfileFragment extends Fragment {
     }
     public void toEditProfile(){
         if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), edit_profile.class);
+            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
             startActivity(intent);
         }
     }
@@ -163,7 +163,7 @@ public class ProfileFragment extends Fragment {
 
     private void logout() {
         UserSessionManager session = new UserSessionManager(requireContext());
-        session.clearSession();
+
 
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

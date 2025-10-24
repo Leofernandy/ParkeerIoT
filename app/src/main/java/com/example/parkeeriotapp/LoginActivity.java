@@ -1,106 +1,114 @@
 package com.example.parkeeriotapp;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import android.os.Bundle;
+import android.widget.*;
+import android.content.Intent;
 
-import com.example.parkeeriotapp.model.SlotParkir;
-import com.example.parkeeriotapp.utils.UserSessionManager;
-
-import com.example.parkeeriotapp.model.User;
-import com.example.parkeeriotapp.utils.RealmSeeder;
-
-import io.realm.Realm;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText edtEmail, edtPassword;
     private Button btnLogin;
-    private TextView txvLinkSignUp;
-    private Realm realm;
+    private TextView txvLinkSignUp, txvForgotPass;
+    private CheckBox cbxKeepMe;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
 
-        realm = Realm.getDefaultInstance();
-
+        // === Inisialisasi View ===
         edtEmail = findViewById(R.id.edtEmail);
         edtPassword = findViewById(R.id.edtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txvLinkSignUp = findViewById(R.id.txvLinkSignUp);
+        txvForgotPass = findViewById(R.id.txvForgotPass);
+        cbxKeepMe = findViewById(R.id.cbxKeepMe);
 
-        btnLogin.setOnClickListener(v -> doLogin());
+        // === Firebase ===
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-        txvLinkSignUp.setOnClickListener(v -> toSignUp());
+        // === Auto-login jika sudah login dan pilih “Keep me logged in” ===
+        if (auth.getCurrentUser() != null && cbxKeepMe.isChecked()) {
+            goToHome();
+        }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        // === Tombol LOGIN ===
+        btnLogin.setOnClickListener(v -> loginUser());
+
+        // === Tombol Sign Up ===
+        txvLinkSignUp.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+            finish();
+        });
+
+        // === Forgot Password ===
+        txvForgotPass.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Masukkan email untuk reset password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            auth.sendPasswordResetEmail(email)
+                    .addOnSuccessListener(aVoid -> Toast.makeText(this, "Link reset dikirim ke email", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(this, "Gagal kirim link reset: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         });
     }
 
-    private void doLogin() {
+    private void loginUser() {
         String email = edtEmail.getText().toString().trim();
         String password = edtPassword.getText().toString().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Email dan password tidak boleh kosong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Email dan password wajib diisi!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        User user = realm.where(User.class)
-                .equalTo("email", email)
-                .equalTo("password", password)
-                .findFirst();
+        btnLogin.setEnabled(false);
+        btnLogin.setText("Processing...");
 
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(authResult -> {
+                    db.collection("users").document(auth.getCurrentUser().getUid())
+                            .get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                if (documentSnapshot.exists()) {
+                                    Toast.makeText(this, "Login berhasil!", Toast.LENGTH_SHORT).show();
+                                    goToHome();
+                                } else {
+                                    Toast.makeText(this, "Data user tidak ditemukan di Firestore", Toast.LENGTH_SHORT).show();
+                                }
+                                btnLogin.setEnabled(true);
+                                btnLogin.setText("LOGIN");
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Gagal ambil data user", Toast.LENGTH_SHORT).show();
+                                btnLogin.setEnabled(true);
+                                btnLogin.setText("LOGIN");
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    btnLogin.setEnabled(true);
+                    btnLogin.setText("LOGIN");
 
-        if (user != null) {
-            Log.d("DEBUG", "User login: " + user.getEmail());
-            UserSessionManager session = new UserSessionManager(this);
-            session.createLoginSession(
-                    user.getEmail(),
-                    user.getFullname(),
-                    user.getPhone(),
-                    user.getPassword()
-            );
-            session.syncSaldoFromWallet(this);
-
-            int mallId = 1;
-            if (realm.where(SlotParkir.class).equalTo("mallId", mallId).findAll().isEmpty()) {
-                RealmSeeder.seedSlotData(realm, mallId);
-            }
-
-            Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
-        } else {
-            Toast.makeText(this, "Email atau password salah", Toast.LENGTH_SHORT).show();
-            Log.d("DEBUG", "Login gagal: user tidak ditemukan di Realm");
-        }
+                    String msg = e.getMessage();
+                    if (msg.contains("password")) msg = "Password salah!";
+                    else if (msg.contains("no user")) msg = "Akun tidak ditemukan!";
+                    else if (msg.contains("badly formatted")) msg = "Format email tidak valid!";
+                    Toast.makeText(this, "Login gagal: " + msg, Toast.LENGTH_SHORT).show();
+                });
     }
-        private void toSignUp() {
-        startActivity(new Intent(this, SignupActivity.class));
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (realm != null && !realm.isClosed()) {
-            realm.close();
-        }
+    private void goToHome() {
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 }

@@ -5,44 +5,25 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.parkeeriotapp.model.Booking;
-import com.example.parkeeriotapp.utils.UserSessionManager;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import io.realm.Realm;
-import io.realm.RealmResults;
 
 public class HistoryFragment extends Fragment {
 
     private ListView listView;
-    private Realm realm;
-    private UserSessionManager session;
 
-    public HistoryFragment() {
-    }
+    public HistoryFragment() { }
 
-    public static HistoryFragment newInstance(String param1, String param2) {
-        HistoryFragment fragment = new HistoryFragment();
-        Bundle args = new Bundle();
-        args.putString("param1", param1);
-        args.putString("param2", param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        realm = Realm.getDefaultInstance();
-        session = new UserSessionManager(requireContext());
+    public static HistoryFragment newInstance() {
+        return new HistoryFragment();
     }
 
     @Nullable
@@ -53,51 +34,30 @@ public class HistoryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         listView = view.findViewById(R.id.listHistory);
 
-        loadHistoryFromRealm();
+        loadDummyHistory();
 
         return view;
     }
 
-    private void loadHistoryFromRealm() {
-        String email = session.getEmail();
-        RealmResults<Booking> results = realm.where(Booking.class)
-                .equalTo("userEmail", email)
-                .equalTo("expired", true) // hanya booking yang sudah expired
-                .sort("jamMasuk", io.realm.Sort.DESCENDING)
-                .findAll();
+    private void loadDummyHistory() {
+        // Data dummy
+        List<String> historyList = new ArrayList<>();
+        historyList.add("Mall Central - B 1234 XYZ - 23 Oct 2025");
+        historyList.add("Mall City - B 5678 ABC - 22 Oct 2025");
 
-
-        List<Booking> bookingList = new ArrayList<>(results); // convert ke list biasa
-
-        HistoryAdapter adapter = new HistoryAdapter(requireContext(), bookingList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_list_item_1,
+                historyList
+        );
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            Booking selected = bookingList.get(position);
+            Toast.makeText(requireContext(), "Klik item " + position, Toast.LENGTH_SHORT).show();
 
+            // Contoh intent, bisa diganti sesuai kebutuhan
             Intent intent = new Intent(requireContext(), BookDetailsActivity.class);
-            intent.putExtra("readonly", true);
-            intent.putExtra("bookingId", selected.getBookingId());
-            intent.putExtra("mallName", selected.getMallName());
-            intent.putExtra("mallAddress", selected.getMallAddress());
-            intent.putExtra("slot", selected.getSlot());
-            intent.putExtra("plate", selected.getPlate());
-            intent.putExtra("jamMasuk", selected.getJamMasuk());
-            intent.putExtra("jamKeluar", selected.getJamKeluar());
-            intent.putExtra("durasiMenit", selected.getDurasiMenit());
-            intent.putExtra("totalHarga", selected.getTotalHarga());
-
             startActivity(intent);
         });
-
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (realm != null && !realm.isClosed()) {
-            realm.close();
-        }
     }
 }
