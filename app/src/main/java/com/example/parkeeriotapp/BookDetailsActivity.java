@@ -12,8 +12,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.parkeeriotapp.utils.UserSessionManager;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -97,7 +95,10 @@ public class BookDetailsActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(v -> {
             if (qrScanned) return;
 
-            // Simulasi rollback saldo wallet
+            // ==============================
+            // 🟡 SESSION & SALDO ROLLBACK (sementara di-nonaktifkan)
+            // ==============================
+            /*
             UserSessionManager session = new UserSessionManager(this);
             String userEmail = session.getEmail();
             int oldBalance = getSharedPreferences("wallet_" + userEmail, MODE_PRIVATE)
@@ -108,9 +109,9 @@ public class BookDetailsActivity extends AppCompatActivity {
                     .putInt("balance", newBalance)
                     .apply();
             session.setSaldo(newBalance);
+            */
 
-            // Simulasi slot kembali tersedia (dummy, bisa integrate ke BookActivity)
-            Toast.makeText(this, "Booking dibatalkan & saldo dikembalikan.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Booking dibatalkan (rollback saldo dinonaktifkan sementara).", Toast.LENGTH_SHORT).show();
 
             // Hapus status QR
             scannedSet.remove(bookingId);

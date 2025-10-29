@@ -1,35 +1,33 @@
 package com.example.parkeeriotapp;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.parkeeriotapp.utils.UserSessionManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class WalletFragment extends Fragment {
 
     private TextView txvSaldo, txvPhone;
     private ImageView imvTopup;
-    private SharedPreferences prefs;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
 
     public WalletFragment() {}
-
-    public static WalletFragment newInstance() {
-        return new WalletFragment();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,57 +39,90 @@ public class WalletFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // 🌈 Ubah warna status bar jadi putih
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             requireActivity().getWindow().setStatusBarColor(
                     ContextCompat.getColor(requireContext(), R.color.white)
             );
         }
 
+        // 🔧 Inisialisasi komponen UI
         txvSaldo = view.findViewById(R.id.txvSaldo);
         txvPhone = view.findViewById(R.id.txvPhone);
         imvTopup = view.findViewById(R.id.imvTopup);
 
-        UserSessionManager session = new UserSessionManager(requireContext());
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
 
-        // SharedPreferences untuk simpan saldo user
-        String email = session.getEmail() != null ? session.getEmail() : "guest";
-        prefs = requireContext().getSharedPreferences("wallet_" + email, Context.MODE_PRIVATE);
-
-        // Hardcode saldo awal 50.000 kalau belum ada
-        if (!prefs.contains("balance")) {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("balance", 50000);
-            editor.apply();
+        if (auth.getCurrentUser() == null) {
+            Toast.makeText(requireContext(), "User belum login", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Tampilkan nomor HP (masking)
-        String phone = session.getPhone() != null ? session.getPhone() : "08123456789";
-        if (phone.length() >= 10) {
-            String masked = phone.substring(0, 2) + "******" + phone.substring(phone.length() - 2);
-            txvPhone.setText(masked);
-        } else {
-            txvPhone.setText(phone);
-        }
+        String uid = auth.getCurrentUser().getUid();
+        DocumentReference userRef = db.collection("users").document(uid);
 
-        updateBalance();
+        // 📥 Load data user dari Firestore
+        userRef.get().addOnSuccessListener(document -> {
+            if (document.exists()) {
+                String phone = document.getString("phone");
+                Long saldo = document.getLong("saldo");
 
+                // Masking nomor HP
+                if (phone != null && phone.length() >= 10) {
+                    String masked = phone.substring(0, 2) + "******" + phone.substring(phone.length() - 2);
+                    txvPhone.setText(masked);
+                } else {
+                    txvPhone.setText(phone != null ? phone : "-");
+                }
+
+                txvSaldo.setText("IDR " + String.format("%,d", saldo != null ? saldo : 0).replace(',', '.'));
+            } else {
+                Toast.makeText(requireContext(), "Data user tidak ditemukan", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e ->
+                Toast.makeText(requireContext(), "Gagal memuat data", Toast.LENGTH_SHORT).show()
+        );
+
+        // 🔹 Perbesar area klik tombol Top-up
+        imvTopup.post(() -> expandClickArea(imvTopup, 24)); // tambah 24dp area sentuhan
+
+        // 💰 Tombol Top-up Rp10.000
         imvTopup.setOnClickListener(v -> {
-            int currentBalance = prefs.getInt("balance", 0);
-            int newBalance = currentBalance + 10000;
+            userRef.get().addOnSuccessListener(document -> {
+                if (document.exists()) {
+                    Long saldoSekarang = document.getLong("saldo");
+                    long saldoBaru = (saldoSekarang != null ? saldoSekarang : 0) + 10000;
 
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt("balance", newBalance);
-            editor.apply();
-
-            session.setSaldo(newBalance);
-
-            updateBalance();
-            Toast.makeText(requireContext(), "Top-up Rp10.000 berhasil", Toast.LENGTH_SHORT).show();
+                    userRef.update("saldo", saldoBaru)
+                            .addOnSuccessListener(aVoid -> {
+                                txvSaldo.setText("IDR " + String.format("%,d", saldoBaru).replace(',', '.'));
+                                Toast.makeText(requireContext(), "Top-up Rp10.000 berhasil", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(requireContext(), "Gagal update saldo", Toast.LENGTH_SHORT).show()
+                            );
+                }
+            }).addOnFailureListener(e ->
+                    Toast.makeText(requireContext(), "Gagal membaca data user", Toast.LENGTH_SHORT).show()
+            );
         });
     }
 
-    private void updateBalance() {
-        int balance = prefs.getInt("balance", 0);
-        txvSaldo.setText("IDR " + String.format("%,d", balance).replace(',', '.'));
+    /**
+     * 🧠 Fungsi untuk memperbesar area klik suatu view tanpa mengubah ukuran visualnya
+     */
+    private void expandClickArea(View view, int dp) {
+        View parent = (View) view.getParent();
+        parent.post(() -> {
+            final Rect rect = new Rect();
+            view.getHitRect(rect);
+            int extraArea = (int) (dp * getResources().getDisplayMetrics().density);
+            rect.top -= extraArea;
+            rect.bottom += extraArea;
+            rect.left -= extraArea;
+            rect.right += extraArea;
+            parent.setTouchDelegate(new TouchDelegate(rect, view));
+        });
     }
 }

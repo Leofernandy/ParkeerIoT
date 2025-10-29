@@ -3,7 +3,6 @@ package com.example.parkeeriotapp;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -18,7 +17,6 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -26,9 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
-import com.example.parkeeriotapp.utils.DateTimeUtil;
-import com.example.parkeeriotapp.utils.UserSessionManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class BookActivity extends AppCompatActivity {
     Button btnBook;
     int mallId;
-    private UserSessionManager session;
+    // private UserSessionManager session; // 🔸 Dinonaktifkan sementara
     private long durasiMenitTerakhir = 0;
     private int totalHargaTerakhir = 0;
     private String bookingId;
@@ -59,7 +54,7 @@ public class BookActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mallId = getIntent().getIntExtra("mallId", -1);
-        session = new UserSessionManager(this);
+        // session = new UserSessionManager(this); // 🔸 Commented out
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_book);
@@ -76,7 +71,7 @@ public class BookActivity extends AppCompatActivity {
         gridSlotContainer = findViewById(R.id.gridSlotContainer);
         tvSelectedSlot = findViewById(R.id.tvSelectedSlot);
 
-        // Dummy load slot parkir (Realm dihapus)
+        // Dummy load slot parkir
         loadParkingSlots(mallId);
 
         edtTglMsk = findViewById(R.id.edtTglMsk);
@@ -91,7 +86,7 @@ public class BookActivity extends AppCompatActivity {
 
         sprPlate = findViewById(R.id.sprPlate);
 
-        // Dummy data kendaraan (Realm dihapus)
+        // Dummy data kendaraan
         List<String> plates = new ArrayList<>();
         plates.add("B1234ABC");
         plates.add("D5678XYZ");
@@ -101,15 +96,7 @@ public class BookActivity extends AppCompatActivity {
 
         btnBook = findViewById(R.id.btnBook);
         btnBook.setOnClickListener(v -> {
-            String email = session.getEmail();
-            SharedPreferences prefs = getSharedPreferences("wallet_" + email, MODE_PRIVATE);
-            int saldoSekarang = prefs.getInt("balance", 0);
-
-            if (saldoSekarang < totalHargaTerakhir) {
-                Toast.makeText(BookActivity.this, "Saldo tidak cukup untuk melakukan booking.", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
+            // 🔸 Skip saldo check
             if (edtTglMsk.getText().toString().isEmpty() ||
                     edtJamMsk.getText().toString().isEmpty() ||
                     edtTglKlr.getText().toString().isEmpty() ||
@@ -120,14 +107,11 @@ public class BookActivity extends AppCompatActivity {
                 return;
             }
 
-            // ===== Placeholder untuk menyimpan booking =====
+            // ===== Simulasi penyimpanan booking =====
             bookingId = generateBookingId();
-            Toast.makeText(this, "Booking berhasil (Realm dihapus). ID: " + bookingId, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Booking berhasil (dummy mode). ID: " + bookingId, Toast.LENGTH_SHORT).show();
 
-            int saldoBaru = saldoSekarang - totalHargaTerakhir;
-            prefs.edit().putInt("balance", saldoBaru).apply();
-            session.setSaldo(saldoBaru);
-
+            // 🔸 Saldo tidak dikurangi
             toPaymentSuccess();
         });
 
@@ -186,7 +170,7 @@ public class BookActivity extends AppCompatActivity {
             long durasiMenit = TimeUnit.MILLISECONDS.toMinutes(durasiMillis);
             long durasiJam = (long) Math.ceil(durasiMenit / 60.0);
             if (durasiJam == 0) durasiJam = 1;
-            int hargaPerJam = 10000; // placeholder
+            int hargaPerJam = 10000;
             durasiMenitTerakhir = durasiJam * 60;
             totalHargaTerakhir = (int) (durasiJam * hargaPerJam);
             btnBook.setText("BOOK IDR " + String.format("%,d", totalHargaTerakhir).replace(",", "."));
@@ -196,12 +180,11 @@ public class BookActivity extends AppCompatActivity {
     }
 
     private void loadParkingSlots(int mallId) {
-        // Dummy data slot parkir
         gridSlotContainer.removeAllViews();
         for (int i = 1; i <= 10; i++) {
             String slotId = "S" + i;
             String slotName = "Slot " + i;
-            boolean booked = false; // semua available
+            boolean booked = false;
 
             TextView slotView = new TextView(this);
             slotView.setText(booked ? "BOOKED" : slotName);

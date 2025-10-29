@@ -3,12 +3,6 @@ package com.example.parkeeriotapp;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,59 +11,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.parkeeriotapp.utils.UserSessionManager;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+
 public class ProfileFragment extends Fragment {
 
-    ImageView imvEditProfile;
-    LinearLayout llyMyVehicles, llyLogout , llyCS , llyHowUse , llyLanguage , llySetPin;
+    private ImageView imvEditProfile;
+    private LinearLayout llyMyVehicles, llyLogout, llyCS, llyHowUse, llyLanguage, llySetPin;
+    private TextView txvFullname, txvEmail, txvPhone;
 
-    TextView txvFullname, txvEmail, txvPhone;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private ListenerRegistration userListener;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    public ProfileFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,6 +43,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // === Inisialisasi View ===
         imvEditProfile = view.findViewById(R.id.imvEditProfile);
         llyMyVehicles = view.findViewById(R.id.llyMyVehicles);
         llyCS = view.findViewById(R.id.llyCS);
@@ -92,78 +55,72 @@ public class ProfileFragment extends Fragment {
         txvEmail = view.findViewById(R.id.txvEmail);
         txvPhone = view.findViewById(R.id.txvPhone);
 
+        // === Firebase ===
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
+        // === Ambil data user ===
+        loadUserProfile();
 
-        loadProfileData();
-        llyLogout.setOnClickListener(v -> logout());
-        View.OnClickListener toastListener = v -> Toast.makeText(getContext(), "Fitur ini sedang dalam proses pengembangan!", Toast.LENGTH_SHORT).show();
+        // === Aksi tombol ===
+        imvEditProfile.setOnClickListener(v -> toEditProfile());
+        llyMyVehicles.setOnClickListener(v -> toMyVehicles());
+
+        View.OnClickListener toastListener = v ->
+                Toast.makeText(getContext(), "Fitur ini sedang dalam pengembangan!", Toast.LENGTH_SHORT).show();
 
         llySetPin.setOnClickListener(toastListener);
         llyLanguage.setOnClickListener(toastListener);
         llyHowUse.setOnClickListener(toastListener);
         llyCS.setOnClickListener(toastListener);
 
-        UserSessionManager session = new UserSessionManager(requireContext());
-        if (session.isLoggedIn()) {
-            txvFullname.setText(session.getFullname());
-            txvEmail.setText(session.getEmail());
-            txvPhone.setText(session.getPhone());
-        }
+        llyLogout.setOnClickListener(v -> logout());
 
-        imvEditProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toEditProfile();
-            }
-        });
-
-        llyMyVehicles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toMyVehicles();
-            }
-        });
-
-
-
+        // === Ubah warna status bar ===
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             requireActivity().getWindow().setStatusBarColor(
-                    ContextCompat.getColor(requireContext(), R.color.white) // warna default kamu
+                    ContextCompat.getColor(requireContext(), R.color.white)
             );
         }
     }
-    public void toEditProfile(){
-        if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-            startActivity(intent);
-        }
-    }
 
-    public void toMyVehicles(){
-        if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), MyVehiclesActivity.class);
-            startActivity(intent);
-        }
-    }
+    private void loadUserProfile() {
+        txvFullname.setText("Loading...");
+        txvEmail.setText("-");
+        txvPhone.setText("-");
 
-    private void loadProfileData() {
-        UserSessionManager session = new UserSessionManager(requireContext());
-        if (session.isLoggedIn()) {
-            txvFullname.setText(session.getFullname());
-            txvEmail.setText(session.getEmail());
-            txvPhone.setText(session.getPhone());
+        if (auth.getCurrentUser() == null) {
+            txvFullname.setText("Guest");
+            txvEmail.setText("-");
+            txvPhone.setText("-");
+            return;
         }
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadProfileData();
+        String uid = auth.getCurrentUser().getUid();
+        DocumentReference userRef = db.collection("users").document(uid);
+
+        // === Realtime Firestore Listener ===
+        userListener = userRef.addSnapshotListener((snapshot, e) -> {
+            if (e != null || snapshot == null || !snapshot.exists()) {
+                txvFullname.setText("Guest");
+                txvEmail.setText("-");
+                txvPhone.setText("-");
+                return;
+            }
+
+            String fullname = snapshot.getString("fullname");
+            String email = snapshot.getString("email");
+            String phone = snapshot.getString("phone");
+
+            txvFullname.setText(fullname != null ? fullname : "Guest");
+            txvEmail.setText(email != null ? email : "-");
+            txvPhone.setText(phone != null ? phone : "-");
+        });
     }
 
     private void logout() {
-        UserSessionManager session = new UserSessionManager(requireContext());
-
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(requireContext(), "Logout berhasil", Toast.LENGTH_SHORT).show();
 
         Intent intent = new Intent(requireActivity(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -171,6 +128,25 @@ public class ProfileFragment extends Fragment {
         requireActivity().finishAffinity();
     }
 
+    private void toEditProfile() {
+        if (getActivity() != null) {
+            startActivity(new Intent(getActivity(), EditProfileActivity.class));
+        }
+    }
 
+    private void toMyVehicles() {
+        if (getActivity() != null) {
+            startActivity(new Intent(getActivity(), MyVehiclesActivity.class));
+        }
+    }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // === Hentikan listener Firestore untuk mencegah memory leak ===
+        if (userListener != null) {
+            userListener.remove();
+            userListener = null;
+        }
+    }
 }
