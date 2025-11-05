@@ -44,7 +44,7 @@ Key functionalities include mall selection, vehicle registration, slot reservati
 * Leonardo
 * Vincent Liawis
 * Stanley Lim
-* Marco Andreas Berlin
+* Erick Budi
 
 ### 🏫 Supervisor:
 
