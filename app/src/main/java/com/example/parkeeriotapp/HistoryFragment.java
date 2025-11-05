@@ -56,7 +56,7 @@ public class HistoryFragment extends Fragment {
             Toast.makeText(requireContext(), "Klik item " + position, Toast.LENGTH_SHORT).show();
 
             // Contoh intent, bisa diganti sesuai kebutuhan
-            Intent intent = new Intent(requireContext(), BookDetailsActivity.class);
+            Intent intent = new Intent(requireContext(), ScanQR.class);
             startActivity(intent);
         });
     }
