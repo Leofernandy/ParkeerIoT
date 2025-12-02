@@ -34,7 +34,7 @@ Key functionalities include mall selection, vehicle registration, slot reservati
 ## 👨‍💼 Tech Stack
 
 * **Android Studio** (Java)
-* **Realm Database**
+* **Firebase (Firestore Database & Realtime Database) **
 * **XML Layout**
 * **Custom Adapter, Intent, Spinner, ListView**
 
@@ -65,7 +65,7 @@ No external server required. Just clone the repository, open in Android Studio, 
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/Leofernandy/ParkeerApp.git
+git clone https://github.com/Leofernandy/ParkeerIoTA.git
 ```
 
 2. **Open in Android Studio**
