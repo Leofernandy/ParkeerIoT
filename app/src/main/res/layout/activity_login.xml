@@ -9,13 +9,19 @@
 
     <LinearLayout
         android:background="@color/white"
-        android:layout_width="409dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp"
-        android:paddingTop="20dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:paddingHorizontal="40dp">
+        <!--
+         PERUBAHAN 1:
+         - layout_width="409dp" -> "match_parent" (Agar memenuhi lebar layar)
+         - paddingTop="20dp" -> Dihapus (agar gravity="center" bekerja sempurna)
+         - paddingHorizontal="40dp" -> DITAMBAHKAN (Ini kuncinya, memberi jarak 40dp di kiri & kanan)
+        -->
 
         <ImageView
             android:id="@+id/imvLogo"
@@ -43,7 +49,7 @@
 
         <EditText
             android:id="@+id/edtEmail"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="25dp"
             android:paddingHorizontal="25dp"
@@ -53,10 +59,11 @@
             android:inputType="textEmailAddress"
             android:hint="Email Address"
             />
+        <!-- PERUBAHAN 2: layout_width="319dp" -> "match_parent" -->
 
         <EditText
             android:id="@+id/edtPassword"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:paddingHorizontal="25dp"
             android:background="@drawable/rounded_edt"
@@ -66,12 +73,14 @@
             android:layout_marginTop="19dp"
             android:hint="Password"
             />
+        <!-- PERUBAHAN 3: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="329dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"
             android:orientation="horizontal">
+            <!-- PERUBAHAN 4: layout_width="329dp" -> "match_parent" -->
 
             <CheckBox
                 android:id="@+id/cbxKeepMe"
@@ -97,16 +106,19 @@
 
         <Button
             android:id="@+id/btnLogin"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/rounded_edt"
             android:text="LOGIN" />
+        <!-- PERUBAHAN 5: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="left"
             android:orientation="horizontal">
+            <!-- PERUBAHAN 6: layout_width="319dp" -> "match_parent" & gravity="center" -->
 
             <TextView
                 android:id="@+id/txvDontHaveAcc"
@@ -128,22 +140,23 @@
 
         </LinearLayout>
 
-
-
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="13dp"
             android:gravity="center"
             android:textColor="@color/greytua"
-            android:text="──────────── or continue with ────────────" />
+            android:text="─────────── or continue with ───────────" />
+        <!-- PERUBAHAN 7: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginVertical="15dp"
+            android:gravity="center"
             android:orientation="horizontal">
+            <!-- PERUBAHAN 8: layout_width="319dp" -> "match_parent" & gravity="center" -->
 
             <LinearLayout
                 android:layout_width="67dp"

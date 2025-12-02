@@ -8,8 +8,15 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="kuning">#626F47</color>
     <color name="grey">#F4F4F4</color>
     <color name="greytua">#a9a8aa</color>
+    <color name="merah">#F44336</color>
+    <color name="kuning">#FFCC40</color>
+    <color name="hijau">#00D40B</color>
+    <color name="biru">#2E4A5E</color>
+
+
+
+
 </resources>
 

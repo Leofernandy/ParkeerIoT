@@ -1,9 +1,11 @@
 package com.example.parkeeriotapp;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.widget.Toast; // <-- INI PERBAIKANNYA
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,7 +60,11 @@ public class ScanQR extends AppCompatActivity {
         public void barcodeResult(BarcodeResult result) {
             if (result.getText() != null) {
                 String qrText = result.getText();
-                Toast.makeText(ScanQR.this, "QR Ditemukan:\n" + qrText, Toast.LENGTH_SHORT).show();
+
+                // ✅ Kembalikan hasil ke activity sebelumnya
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("QR_RESULT", qrText);
+                setResult(Activity.RESULT_OK, resultIntent);
 
                 // ✅ Berhenti scan setelah dapat QR
                 barcodeView.pause();
@@ -88,6 +94,7 @@ public class ScanQR extends AppCompatActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startScanning();
             } else {
+                // Baris ini yang menyebabkan error jika import tidak ada
                 Toast.makeText(this, "Izin kamera dibutuhkan untuk scan QR", Toast.LENGTH_SHORT).show();
                 finish();
             }

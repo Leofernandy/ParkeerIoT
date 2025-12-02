@@ -86,7 +86,7 @@
 
         <!-- Button -->
         <LinearLayout
-            android:id="@+id/viewBarcodeButton"
+            android:id="@+id/scanQRButton"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
@@ -95,7 +95,7 @@
             android:paddingHorizontal="16dp">
 
             <TextView
-                android:text="VIEW BARCODE"
+                android:text="SCAN QR CODE"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:textSize="16sp"

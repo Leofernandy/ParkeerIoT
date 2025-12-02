@@ -9,57 +9,70 @@
 
 
     <LinearLayout
-        android:layout_width="409dp"
-        android:layout_height="889dp"
-        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:orientation="vertical"
-        android:paddingVertical="45dp"
+        android:paddingHorizontal="40dp"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="1dp">
+        <!--
+         PERUBAHAN 1:
+         - layout_width="409dp" -> "match_parent"
+         - layout_height="889dp" -> "match_parent"
+         - gravity="center_horizontal" -> "center" (agar center vertikal/horisontal)
+         - paddingVertical="45dp" -> Dihapus (biarkan 'gravity' yg mengatur)
+         - paddingHorizontal="40dp" -> DITAMBAHKAN (untuk jarak tepi kiri/kanan)
+        -->
 
-
-        <LinearLayout
-            android:layout_width="319dp"
-            android:layout_height="23dp"
-            android:orientation="horizontal">
+        <!-- PERUBAHAN 2: Ganti LinearLayout ke RelativeLayout untuk centering header -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+            <!-- Ganti 319dp -> match_parent -->
 
             <ImageView
                 android:id="@+id/imvLeftArrow"
                 android:layout_width="23dp"
                 android:layout_height="23dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:src="@drawable/leftarrow"></ImageView>
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="20dp"
                 android:layout_height="23dp"
-                android:layout_marginLeft="128dp"
+                android:layout_centerInParent="true"
                 app:srcCompat="@drawable/logo" />
+            <!-- Hapus marginLeft="128dp" yang kaku -->
 
-        </LinearLayout>
+        </RelativeLayout>
 
 
         <TextView
             android:id="@+id/txvSignup"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:paddingTop="45dp"
+            android:paddingTop="15dp"
             android:text="Sign Up"
             android:textColor="@color/black"
             android:textSize="24dp"
             android:textStyle="bold" />
+        <!-- PERUBAHAN 3: layout_width="319dp" -> "match_parent" -->
 
         <TextView
             android:id="@+id/txvCreate"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="Create your account in seconds" />
+        <!-- PERUBAHAN 4: layout_width="319dp" -> "match_parent" -->
 
         <EditText
             android:id="@+id/edtFullname"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="19dp"
             android:background="@drawable/rounded_edt"
@@ -68,10 +81,11 @@
             android:inputType="text"
             android:paddingHorizontal="25dp"
             android:textSize="13dp" />
+        <!-- PERUBAHAN 5: layout_width="319dp" -> "match_parent" -->
 
         <EditText
             android:id="@+id/edtEmail"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="19dp"
             android:background="@drawable/rounded_edt"
@@ -80,10 +94,11 @@
             android:inputType="textEmailAddress"
             android:paddingHorizontal="25dp"
             android:textSize="13dp" />
+        <!-- PERUBAHAN 6: layout_width="319dp" -> "match_parent" -->
 
         <EditText
             android:id="@+id/edtPhone"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="19dp"
             android:background="@drawable/rounded_edt"
@@ -92,10 +107,11 @@
             android:inputType="phone"
             android:paddingHorizontal="25dp"
             android:textSize="13dp" />
+        <!-- PERUBAHAN 7: layout_width="319dp" -> "match_parent" -->
 
         <EditText
             android:id="@+id/edtPassword"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginTop="19dp"
             android:background="@drawable/rounded_edt"
@@ -104,12 +120,14 @@
             android:inputType="textPassword"
             android:paddingHorizontal="25dp"
             android:textSize="13dp" />
+        <!-- PERUBAHAN 8: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="329dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="5dp"
             android:orientation="horizontal">
+            <!-- PERUBAHAN 9: layout_width="329dp" -> "match_parent" -->
 
             <CheckBox
                 android:id="@+id/cbxTnC"
@@ -119,32 +137,35 @@
                 android:buttonTint="@color/navy"
                 android:text="I agree to the"
                 android:textColor="@color/navy"
-                android:textSize="13dp" />
+                android:textSize="10dp" />
 
             <TextView
                 android:id="@+id/txvForgotPass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="7dp"
                 android:layout_weight="0"
                 android:gravity="right"
                 android:text=" Terms of Service and Privacy Policy"
                 android:textColor="@color/navy"
-                android:textSize="13dp" />
+                android:textSize="10dp" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btnSignup"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginBottom="5dp"
             android:background="@drawable/rounded_edt"
             android:text="SIGN UP" />
+        <!-- PERUBAHAN 10: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="left"
             android:orientation="horizontal">
+            <!-- PERUBAHAN 11: layout_width="319dp" -> "match_parent" & gravity="center" -->
 
             <TextView
                 android:id="@+id/txvAlrAMember"
@@ -168,24 +189,28 @@
 
         <TextView
             android:id="@+id/textView5"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="──────────── or continue with ────────────"
+            android:text="─────────── or continue with ───────────"
             android:textColor="@color/greytua"
             android:textSize="13dp" />
+        <!-- PERUBAHAN 12: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_marginVertical="15dp"
+            android:gravity="center"
+            android:clipChildren="false"
             android:orientation="horizontal">
+            <!-- PERUBAHAN 13: layout_width="319dp" -> "match_parent" & gravity="center" -->
 
             <LinearLayout
                 android:layout_width="67dp"
                 android:layout_height="55dp"
                 android:layout_marginStart="2dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/rounded_edt"
                 android:orientation="vertical">
 
@@ -200,7 +225,7 @@
             <LinearLayout
                 android:layout_width="67dp"
                 android:layout_height="55dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/rounded_edt"
                 android:orientation="vertical">
 
@@ -215,7 +240,7 @@
             <LinearLayout
                 android:layout_width="67dp"
                 android:layout_height="55dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/rounded_edt"
                 android:orientation="vertical">
 
@@ -230,7 +255,7 @@
             <LinearLayout
                 android:layout_width="67dp"
                 android:layout_height="55dp"
-                android:layout_marginEnd="17dp"
+                android:layout_marginEnd="15dp"
                 android:background="@drawable/rounded_edt"
                 android:orientation="vertical">
 
@@ -249,5 +274,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="20dp" />
+        app:layout_constraintGuide_begin="0dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

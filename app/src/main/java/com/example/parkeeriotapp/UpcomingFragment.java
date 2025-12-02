@@ -1,61 +1,130 @@
 package com.example.parkeeriotapp;
 
+// Ganti nama paket (package) di atas sesuai dengan project Anda
+
+import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.BaseAdapter;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.example.parkeeriotapp.model.Booking; // <-- Import model baru Anda
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UpcomingFragment extends Fragment {
 
     private ListView listView;
+    private DatabaseReference bookingsRef;
+    private FirebaseAuth auth;
+    private ValueEventListener bookingsListener;
 
-    public UpcomingFragment() { }
+    private List<Booking> upcomingList;
+    private UpcomingAdapter adapter; // Asumsi Anda punya adapter ini
+
+    public UpcomingFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Inisialisasi Firebase
+        auth = FirebaseAuth.getInstance();
+        bookingsRef = FirebaseDatabase.getInstance().getReference("bookings");
+        upcomingList = new ArrayList<>();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_upcoming, container, false);
         listView = view.findViewById(R.id.listUpcoming);
 
-        // Pakai adapter langsung dengan hardcode data
-        listView.setAdapter(new BaseAdapter() {
-            String[] malls = {"Mall Example 1", "Mall Example 2"};
-            String[] slots = {"Slot A1", "Slot B2"};
-            String[] plates = {"B1234XYZ", "C5678ABC"};
-            String[] times = {"10:00 - 12:00", "13:00 - 15:00"};
+        // Setup adapter
+        adapter = new UpcomingAdapter(requireContext(), upcomingList); // Pastikan adapter Anda bisa menerima List<Booking>
+        listView.setAdapter(adapter);
 
-            @Override
-            public int getCount() { return malls.length; }
+        // Tambahkan click listener untuk pindah ke BookDetailsActivity
+        listView.setOnItemClickListener((parent, view1, position, id) -> {
+            Booking selected = upcomingList.get(position);
 
-            @Override
-            public Object getItem(int position) { return null; }
-
-            @Override
-            public long getItemId(int position) { return position; }
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                if (convertView == null) {
-                    convertView = inflater.inflate(R.layout.layout_item_incoming, parent, false);
-                }
-                TextView tvMallName = convertView.findViewById(R.id.tvMallName);
-                TextView tvBookingDate = convertView.findViewById(R.id.tvBookingDate);
-                TextView tvPlate = convertView.findViewById(R.id.tvPlate);
-                TextView tvStatus = convertView.findViewById(R.id.tvStatus);
-
-                tvMallName.setText(malls[position]);
-                tvBookingDate.setText(times[position]);
-                tvPlate.setText(plates[position]);
-                tvStatus.setText("RESERVED");
-
-                return convertView;
-            }
+            Intent intent = new Intent(requireContext(), BookDetailsActivity.class);
+            // BookDetailsActivity sudah kita perbaiki, jadi hanya perlu kirim bookingId
+            intent.putExtra("bookingId", selected.getBookingId());
+            startActivity(intent);
         });
 
         return view;
+    }
+
+    private void loadUpcomingBookings() {
+        String uid = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+        if (uid == null) {
+            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Query untuk mengambil booking milik user ini
+        Query upcomingQuery = bookingsRef.orderByChild("userId").equalTo(uid);
+
+        if (bookingsListener != null) {
+            upcomingQuery.removeEventListener(bookingsListener); // Hapus listener lama jika ada
+        }
+
+        bookingsListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                upcomingList.clear(); // Kosongkan list
+                for (DataSnapshot bookingSnap : snapshot.getChildren()) {
+                    Booking booking = bookingSnap.getValue(Booking.class);
+
+                    if (booking != null && booking.getStatus() != null) {
+                        // Status "Upcoming" = booked ATAU checked-in
+                        if (booking.getStatus().equals("booked") || booking.getStatus().equals("checked-in")) {
+                            upcomingList.add(booking);
+                        }
+                    }
+                }
+                adapter.notifyDataSetChanged(); // Update ListView
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(getContext(), "Failed to load bookings: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        };
+        upcomingQuery.addValueEventListener(bookingsListener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUpcomingBookings(); // Muat data setiap kali fragment terlihat
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Hapus listener saat fragment tidak terlihat untuk hemat baterai
+        if (bookingsListener != null) {
+            bookingsRef.removeEventListener(bookingsListener);
+        }
     }
 }
