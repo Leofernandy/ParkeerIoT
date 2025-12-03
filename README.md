@@ -4,6 +4,7 @@
 
 <div align="center">
 <a href="https://youtu.be/0DgMbbMePc4" target="blank">
+  <img src="https://img.youtube.com/vi/0DgMbbMePc4/0.jpg" alt="Watch Demo" width="480">
 </a>
 
 <h2>Parkeer - IoT Smart Parking System</h2>
@@ -12,132 +13,99 @@
 
 </div>
 
-💡 Overview
+<br>
 
-Parkeer is a comprehensive smart parking ecosystem that integrates a mobile application with physical hardware (IoT). Designed to solve parking congestion, the system allows users to book slots remotely, while the hardware ensures only valid bookings can access the facility.
+## 💡 Overview
 
-The system synchronizes Real-time Database events between the Android App and the ESP32 Microcontroller to control gates, monitor slot occupancy, and manage payments instantly.
+**Parkeer** is a comprehensive smart parking ecosystem that integrates a mobile application with physical hardware (IoT). Designed to solve parking congestion, the system allows users to book slots remotely, while the hardware ensures only valid bookings can access the facility.
 
-🔗 Watch Demo on YouTube
+The system synchronizes **Real-time Database** events between the Android App and the ESP32 Microcontroller to control gates, monitor slot occupancy, and manage payments instantly.
 
-✨ Key Features
+[**🔗 Watch Demo on YouTube**](https://youtu.be/0DgMbbMePc4)
 
-📱 Mobile Application
+---
 
-Real-time Slot Monitoring: View slot status (Available 🟢, Booked 🟡, Occupied 🔴) updated instantly from hardware sensors.
+## ✨ Key Features
 
-Secure Booking System: Reserve specific slots in advance. The app performs atomic transactions to deduct wallet balance safely.
+### 📱 Mobile Application
+* **Real-time Slot Monitoring:** View slot status (**Available 🟢**, **Booked 🟡**, **Occupied 🔴**) updated instantly from hardware sensors.
+* **Secure Booking System:** Reserve specific slots in advance. The app performs atomic transactions to deduct wallet balance safely.
+* **QR Code Access:** Scan the QR Code displayed at the parking gate to validate booking and open the barrier.
+* **Auto-Refund Policy:** If a user cancels a booking before scanning, the system automatically releases the slot and refunds the balance to the user's wallet.
+* **Vehicle Management:** Register multiple vehicles for easy booking.
 
-QR Code Access: Scan the QR Code displayed at the parking gate to validate booking and open the barrier.
+### 🤖 IoT Hardware (Smart Gate & Slots)
+* **Automated Gate Control:** Servo motors open the gate only upon successful QR validation from the app.
+* **Security Logic:** No Booking = No Entry. The buzzer alerts if an unauthorized vehicle attempts to enter.
+* **Sensor Fusion:**
+    * *Gate Sensors:* Detect vehicle presence at entry/exit points.
+    * *Slot Sensors:* 5 IR sensors monitor individual parking spots.
+* **Visual Feedback:** OLED Display shows dynamic QR codes and status messages; LEDs indicate slot status physically.
 
-Auto-Refund Policy: If a user cancels a booking before scanning, the system automatically releases the slot and refunds the balance to the user's wallet.
+---
 
-Vehicle Management: Register multiple vehicles for easy booking.
+## 🛠 Tech Stack
 
-🤖 IoT Hardware (Smart Gate & Slots)
+### Android (Software)
+* **Language:** Java
+* **IDE:** Android Studio
+* **Database:**
+    * *Firebase Firestore:* User profiles, Malls data, Vehicle info.
+    * *Firebase Realtime Database (RTDB):* High-speed sync for Slot Status and Gate Triggers.
+* **Libraries:** `zxing-android-embedded` (QR Scan), Firebase Auth, Glide.
 
-Automated Gate Control: Servo motors open the gate only upon successful QR validation from the app.
+### IoT (Hardware/Firmware)
+* **Microcontroller:** ESP32
+* **Language:** C++ (Arduino IDE)
+* **Communication:** WiFi & FirebaseClient Library.
+* **Components:**
+    * 2x Servo Motors (MG996R/SG90)
+    * 7x IR Obstacle Sensors (5 Slots + 2 Gates)
+    * 1x OLED Display (SSD1306)
+    * 1x Buzzer
+    * LED Indicators
 
-Security Logic: No Booking = No Entry. The buzzer alerts if an unauthorized vehicle attempts to enter.
+---
 
-Sensor Fusion:
+## 📄 Project Members
+* Leo Fernandy
+* Leonardo
+* Vincent Liawis
+* Stanley Lim
+* Erick Budi
 
-Gate Sensors: Detect vehicle presence at entry/exit points.
+**🏫 Supervisor:** Mr. Ade Maulana
 
-Slot Sensors: 5 IR sensors monitor individual parking spots.
+---
 
-Visual Feedback: OLED Display shows dynamic QR codes and status messages; LEDs indicate slot status physically.
+## 📅 Getting Started
 
-🛠 Tech Stack
+### Prerequisites
+* Android Studio (Latest Stable)
+* Arduino IDE (with ESP32 Board Manager installed)
+* Firebase Project (configured with both Firestore and Realtime Database)
 
-Android (Software)
+### 1. Android Setup
 
-Language: Java
+1.  Clone the repository:
+    ```bash
+    git clone [https://github.com/Leofernandy/ParkeerIoTA.git](https://github.com/Leofernandy/ParkeerIoTA.git)
+    ```
+2.  Add your `google-services.json` file to the `app/` directory.
+3.  Sync Gradle and Build the project.
 
-IDE: Android Studio
+### 2. Hardware (Firmware) Setup
 
-Database:
-
-Firebase Firestore: User profiles, Malls data, Vehicle info.
-
-Firebase Realtime Database (RTDB): High-speed sync for Slot Status and Gate Triggers.
-
-Libraries: zxing-android-embedded (QR Scan), Firebase Auth, Glide.
-
-IoT (Hardware/Firmware)
-
-Microcontroller: ESP32
-
-Language: C++ (Arduino IDE)
-
-Communication: WiFi & FirebaseClient Library.
-
-Components:
-
-2x Servo Motors (MG996R/SG90)
-
-7x IR Obstacle Sensors (5 Slots + 2 Gates)
-
-1x OLED Display (SSD1306)
-
-1x Buzzer
-
-LED Indicators
-
-📄 Project Members
-
-Leo Fernandy
-
-Leonardo
-
-Vincent Liawis
-
-Stanley Lim
-
-Erick Budi
-
-🏫 Supervisor:
-
-Mr. Ade Maulana
-
-📅 Getting Started
-
-Prerequisites
-
-Android Studio (Latest Stable)
-
-Arduino IDE (with ESP32 Board Manager installed)
-
-Firebase Project (configured with both Firestore and Realtime Database)
-
-1. Android Setup
-
-Clone the repository:
-
-git clone [https://github.com/Leofernandy/ParkeerIoTA.git](https://github.com/Leofernandy/ParkeerIoTA.git)
-
-
-Add your google-services.json file to the app/ directory.
-
-Sync Gradle and Build the project.
-
-2. Hardware (Firmware) Setup
-
-Open the ParkingSystem_QR_Gate.ino file in Arduino IDE.
-
-Install required libraries:
-
-Firebase ESP32 Client
-
-ESP32Servo
-
-ESP8266 and ESP32 OLED driver for SSD1306 displays
-
-QRcodeOled
-
-Create a secrets.h file and configure your credentials:
-
-#define WIFI_SSID "YourWiFiName"
-#define WIFI_PASSWORD "YourWiFiPass"
-#define REFERENCE_URL "[https://your-project.firebaseio.com](https://your-project.firebaseio.com)"
-#define AUTH_TOKEN "YourDatabaseSecret"
+1.  Open the `ParkingSystem_QR_Gate.ino` file in Arduino IDE.
+2.  Install required libraries:
+    * Firebase ESP32 Client
+    * ESP32Servo
+    * ESP8266 and ESP32 OLED driver for SSD1306 displays
+    * QRcodeOled
+3.  Create a `secrets.h` file and configure your credentials:
+    ```cpp
+    #define WIFI_SSID "YourWiFiName"
+    #define WIFI_PASSWORD "YourWiFiPass"
+    #define REFERENCE_URL "[https://your-project.firebaseio.com](https://your-project.firebaseio.com)"
+    #define AUTH_TOKEN "YourDatabaseSecret"
+    ```
