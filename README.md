@@ -1,12 +1,3 @@
-<div align="center">
-<hr>
-</div>
-
-<div align="center">
-<a href="https://youtu.be/0DgMbbMePc4" target="blank">
-  <img src="https://img.youtube.com/vi/0DgMbbMePc4/0.jpg" alt="Watch Demo" width="480">
-</a>
-
 <h2>Parkeer - IoT Smart Parking System</h2>
 
 <img src="./assets/bg_parkeer.png" width="80%">
