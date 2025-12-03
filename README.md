@@ -3,6 +3,7 @@
 <h1>Parkeer - IoT Smart Parking System</h1>
 
 <img src="./assets/bg_parkeer.png" width="100%" alt="Parkeer Banner">
+<br>
 
 [![Watch Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/Z0ob9yXkLB8?si=fZw3qr6ygJA9Yw4v)
 
@@ -89,7 +90,7 @@ The system synchronizes **Real-time Database** events between the Android App an
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/Leofernandy/ParkeerIoT.git](https://github.com/Leofernandy/ParkeerIoT.git)
+    git clone https://github.com/Leofernandy/ParkeerIoT.git
     ```
 2.  Add your `google-services.json` file to the `app/` directory.
 3.  Sync Gradle and Build the project.
