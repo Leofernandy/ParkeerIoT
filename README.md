@@ -6,7 +6,7 @@
 <a href="https://youtu.be/0DgMbbMePc4" target="blank">
 </a>
 
-<h2>Parkeer</h2>
+<h2>Parkeer - Smart Parking Mobile Apps & IoT</h2>
 
 <img src="./assets/bg_parkeer.png" width="80%">
 
