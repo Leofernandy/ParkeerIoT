@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="./assets/bg_parkeer.png" width="100%" alt="Parkeer Banner">
-
 <h1>Parkeer - IoT Smart Parking System</h1>
+
+<img src="./assets/bg_parkeer.png" width="100%" alt="Parkeer Banner">
 
 [![Watch Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/Z0ob9yXkLB8?si=fZw3qr6ygJA9Yw4v)
 
@@ -20,7 +20,7 @@ The system synchronizes **Real-time Database** events between the Android App an
 
 <div align="center">
   <h3>Hardware Prototype Setup</h3>
-  <img src="./assets/diorama_setup.jpg" width="80%" alt="Hardware Prototype">
+  <img src="./assets/diorama_setup.jpg" width="1000%" alt="Hardware Prototype">
 </div>
 
 <br>
@@ -59,11 +59,11 @@ The system synchronizes **Real-time Database** events between the Android App an
 * **Language:** C++ (Arduino IDE)
 * **Communication:** WiFi & FirebaseClient Library.
 * **Components:**
-    * 2x Servo Motors (MG996R/SG90)
+    * 2x Servo Motors (SG90)
     * 7x IR Obstacle Sensors (5 Slots + 2 Gates)
+    * 5x RGB LED Indicators (KY009)
     * 1x OLED Display (SSD1306)
     * 1x Buzzer
-    * LED Indicators
 
 ---
 
