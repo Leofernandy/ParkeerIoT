@@ -1,10 +1,10 @@
 <div align="center">
-<hr>
-</div>
 
-<h2>Parkeer - IoT Smart Parking System</h2>
+<img src="./assets/bg_parkeer.png" width="100%" alt="Parkeer Banner">
 
-<img src="./assets/bg_parkeer.png" width="80%">
+<h1>Parkeer - IoT Smart Parking System</h1>
+
+[![Watch Demo](https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube)](https://youtu.be/Z0ob9yXkLB8?si=fZw3qr6ygJA9Yw4v)
 
 </div>
 
@@ -16,14 +16,13 @@
 
 The system synchronizes **Real-time Database** events between the Android App and the ESP32 Microcontroller to control gates, monitor slot occupancy, and manage payments instantly.
 
-[**🔗 Watch Demo on YouTube**](https://youtu.be/Z0ob9yXkLB8?si=fZw3qr6ygJA9Yw4v)
-
 ---
 
 <div align="center">
   <h3>Hardware Prototype Setup</h3>
-  <img src="./assets/diorama_setup.jpg" width="80%">
+  <img src="./assets/diorama_setup.jpg" width="80%" alt="Hardware Prototype">
 </div>
+
 <br>
 
 ## ✨ Key Features
@@ -90,14 +89,14 @@ The system synchronizes **Real-time Database** events between the Android App an
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/Leofernandy/ParkeerIoT.git
+    git clone [https://github.com/Leofernandy/ParkeerIoT.git](https://github.com/Leofernandy/ParkeerIoT.git)
     ```
 2.  Add your `google-services.json` file to the `app/` directory.
 3.  Sync Gradle and Build the project.
 
 ### 2. Hardware (Firmware) Setup
 
-1.  Open the `ParkingSystem_QR_Gate.ino` file in Arduino IDE.
+1.  Open the `IoTParkeer.ino` file in Arduino IDE.
 2.  Install required libraries:
     * Firebase ESP32 Client
     * ESP32Servo
@@ -110,3 +109,16 @@ The system synchronizes **Real-time Database** events between the Android App an
     #define REFERENCE_URL "[https://your-project.firebaseio.com](https://your-project.firebaseio.com)"
     #define AUTH_TOKEN "YourDatabaseSecret"
     ```
+
+---
+
+## 🚑 Issues
+Found a bug? Submit via GitHub Issues with details + screenshots.
+
+## 📆 License
+This project is for educational purposes only.
+
+<br>
+<div align="center">
+  <b>Thank you for checking out Parkeer! 🚗✨</b>
+</div>
