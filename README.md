@@ -1,3 +1,7 @@
+<div align="center">
+<hr>
+</div>
+
 <h2>Parkeer - IoT Smart Parking System</h2>
 
 <img src="./assets/bg_parkeer.png" width="80%">
@@ -12,9 +16,15 @@
 
 The system synchronizes **Real-time Database** events between the Android App and the ESP32 Microcontroller to control gates, monitor slot occupancy, and manage payments instantly.
 
-[**🔗 Watch Demo on YouTube**](https://youtu.be/0DgMbbMePc4)
+[**🔗 Watch Demo on YouTube**](https://youtu.be/Z0ob9yXkLB8?si=fZw3qr6ygJA9Yw4v)
 
 ---
+
+<div align="center">
+  <h3>Hardware Prototype Setup</h3>
+  <img src="./assets/diorama_setup.jpg" width="80%">
+</div>
+<br>
 
 ## ✨ Key Features
 
@@ -80,7 +90,7 @@ The system synchronizes **Real-time Database** events between the Android App an
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/Leofernandy/ParkeerIoTA.git](https://github.com/Leofernandy/ParkeerIoTA.git)
+    git clone https://github.com/Leofernandy/ParkeerIoT.git
     ```
 2.  Add your `google-services.json` file to the `app/` directory.
 3.  Sync Gradle and Build the project.
