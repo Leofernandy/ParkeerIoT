@@ -79,7 +79,6 @@ The system synchronizes **Real-time Database** events between the Android App an
 * Leonardo
 * Vincent Liawis
 * Stanley Lim
-* Erick Budi
 
 **🏫 Supervisor:** Mr. Ade Maulana
 
