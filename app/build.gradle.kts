@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation ("com.google.android.material:material:1.10.0")
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("com.android.volley:volley:1.2.1")
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
