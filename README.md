@@ -1,100 +1,130 @@
 <div align="center">
-<hr>
-</div>
 
-<div align="center">
-<a href="https://youtu.be/0DgMbbMePc4" target="blank">
+<h1>Parkeer - IoT Smart Parking System</h1>
+
+<br>
+
+<img src="./assets/bg_parkeer.png" width="100%" alt="Parkeer Banner">
+
+<br>
+<br>
+
+<a href="https://youtu.be/Z0ob9yXkLB8?si=fZw3qr6ygJA9Yw4v" target="_blank">
+  <img src="https://img.shields.io/badge/YouTube-Watch%20Demo-red?style=for-the-badge&logo=youtube" height="50">
 </a>
 
-<h2>Parkeer</h2>
-
-<img src="./assets/bg_parkeer.png" width="80%">
-
 </div>
+
+<br>
 
 ## 💡 Overview
 
-**Parkeer** is a mobile application designed to make parking at shopping malls easier, faster, and more convenient. Built using **Android Studio (Java)** and **Realm Database**, Parkeer allows users to book parking slots in advance, select their vehicle, and receive a confirmation with full details.
+**Parkeer** is a comprehensive smart parking ecosystem that integrates a mobile application with physical hardware (IoT). Designed to solve parking congestion, the system allows users to book slots remotely, while the hardware ensures only valid bookings can access the facility.
 
-Key functionalities include mall selection, vehicle registration, slot reservation, price calculation, and viewing booking history.
+The system synchronizes **Real-time Database** events between the Android App and the ESP32 Microcontroller to control gates, monitor slot occupancy, and manage payments instantly.
 
-### 🔗 [Watch Demo on YouTube](https://youtu.be/0DgMbbMePc4)
+---
 
-## ✨ Features
+<div align="center">
+  <h3>Hardware Prototype Setup</h3>
+  <img src="./assets/diorama_setup.jpg" width="1000%" alt="Hardware Prototype">
+</div>
 
-* 🏢 **Mall Selection**: Browse supported malls with visual and location info.
-* ⛽ **Slot Booking**: Choose available parking slots in real-time.
-* 🚗 **Vehicle Management**: Add and edit vehicle details (brand, model, year, color, plate).
-* ⏰ **Time Picker**: Select entry and exit time.
-* 📅 **Duration & Price Calculation**: Auto-calculate based on time and rate.
-* 💳 **Payment Method Selection**.
-* 📲 **Booking Confirmation**: View barcode, booking ID, and summary.
-* 📊 **Booking History**: See past reservations with full details.
+<br>
 
-## 👨‍💼 Tech Stack
+## ✨ Key Features
 
-* **Android Studio** (Java)
-* **Firebase (Firestore Database & Realtime Database) **
-* **XML Layout**
-* **Custom Adapter, Intent, Spinner, ListView**
+### 📱 Mobile Application
+* **Real-time Slot Monitoring:** View slot status (**Available 🟢**, **Booked 🟡**, **Occupied 🔴**) updated instantly from hardware sensors.
+* **Secure Booking System:** Reserve specific slots in advance. The app performs atomic transactions to deduct wallet balance safely.
+* **QR Code Access:** Scan the QR Code displayed at the parking gate to validate booking and open the barrier.
+* **Auto-Refund Policy:** If a user cancels a booking before scanning, the system automatically releases the slot and refunds the balance to the user's wallet.
+* **Vehicle Management:** Register multiple vehicles for easy booking.
+
+### 🤖 IoT Hardware (Smart Gate & Slots)
+* **Automated Gate Control:** Servo motors open the gate only upon successful QR validation from the app.
+* **Security Logic:** No Booking = No Entry. The buzzer alerts if an unauthorized vehicle attempts to enter.
+* **Sensor Fusion:**
+    * *Gate Sensors:* Detect vehicle presence at entry/exit points.
+    * *Slot Sensors:* 5 IR sensors monitor individual parking spots.
+* **Visual Feedback:** OLED Display shows dynamic QR codes and status messages; LEDs indicate slot status physically.
+
+---
+
+## 🛠 Tech Stack
+
+### Android (Software)
+* **Language:** Java
+* **IDE:** Android Studio
+* **Database:**
+    * *Firebase Firestore:* User profiles, Malls data, Vehicle info.
+    * *Firebase Realtime Database (RTDB):* High-speed sync for Slot Status and Gate Triggers.
+* **Libraries:** `zxing-android-embedded` (QR Scan), Firebase Auth, Glide.
+
+### IoT (Hardware/Firmware)
+* **Microcontroller:** ESP32
+* **Language:** C++ (Arduino IDE)
+* **Communication:** WiFi & FirebaseClient Library.
+* **Components:**
+    * 2x Servo Motors (SG90)
+    * 7x IR Obstacle Sensors (5 Slots + 2 Gates)
+    * 5x RGB LED Indicators (KY009)
+    * 1x OLED Display (SSD1306)
+    * 1x Buzzer
+
+---
 
 ## 📄 Project Members
-
 * Leo Fernandy
 * Leonardo
 * Vincent Liawis
 * Stanley Lim
-* Erick Budi
 
-### 🏫 Supervisor:
-
-* Mr. Ade Maulana
-
-## 📅 Getting Started
-
-No external server required. Just clone the repository, open in Android Studio, and build the project. Realm is integrated for local storage.
-
-### Prerequisites
-
-* Android Studio (Latest version)
-* Android SDK
-* Java SDK 8+
-
-### Installation
-
-1. **Clone the repository:**
-
-```bash
-git clone https://github.com/Leofernandy/ParkeerIoTA.git
-```
-
-2. **Open in Android Studio**
-
-3. **Build and Run** on emulator or real device (min SDK: 21)
-
-## 🔄 Usage
-
-1. **Add Your Vehicle**
-Go to the My Vehicles tab in the Profile section and add your vehicle details (plate number, brand, model, year, and color).
-2. **Top Up Wallet**
-Tap the three dots menu in the Wallet Card to add IDR 10,000 to your wallet balance per click.
-3. **Choose a Mall**
-Navigate to the Home tab and select your preferred mall.
-4. **Book a Parking Slot**
-Fill out the booking form by selecting your vehicle, entry and exit times, and an available parking slot.
-5. **Confirm Your Booking**
-Review the details and confirm the booking to secure your slot.
-6. **View Booking Details**
-Access your booking history and details from the Activity tab, including barcode, booking ID, slot info, and payment summary.
-
-## 🚑 Issues
-
-Found a bug or issue? Please submit via GitHub Issues tab with detailed description and screenshots.
-
-## 📆 License
-
-This project is for educational purposes only.
+**🏫 Supervisor:** Mr. Ade Maulana
 
 ---
 
-Thank you for checking out Parkeer!
+## 📅 Getting Started
+
+### Prerequisites
+* Android Studio (Latest Stable)
+* Arduino IDE (with ESP32 Board Manager installed)
+* Firebase Project (configured with both Firestore and Realtime Database)
+
+### 1. Android Setup
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/Leofernandy/ParkeerIoT.git
+    ```
+2.  Add your `google-services.json` file to the `app/` directory.
+3.  Sync Gradle and Build the project.
+
+### 2. Hardware (Firmware) Setup
+
+1.  Open the `IoTParkeer.ino` file in Arduino IDE.
+2.  Install required libraries:
+    * Firebase ESP32 Client
+    * ESP32Servo
+    * ESP8266 and ESP32 OLED driver for SSD1306 displays
+    * QRcodeOled
+3.  Create a `secrets.h` file and configure your credentials:
+    ```cpp
+    #define WIFI_SSID "YourWiFiName"
+    #define WIFI_PASSWORD "YourWiFiPass"
+    #define REFERENCE_URL "[https://your-project.firebaseio.com](https://your-project.firebaseio.com)"
+    #define AUTH_TOKEN "YourDatabaseSecret"
+    ```
+
+---
+
+## 🚑 Issues
+Found a bug? Submit via GitHub Issues with details + screenshots.
+
+## 📆 License
+This project is for educational purposes only.
+
+<br>
+<div align="center">
+  <b>Thank you for checking out Parkeer! 🚗✨</b>
+</div>
