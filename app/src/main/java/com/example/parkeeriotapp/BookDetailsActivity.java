@@ -2,6 +2,7 @@ package com.example.parkeeriotapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -94,6 +95,7 @@ public class BookDetailsActivity extends AppCompatActivity {
         TextView textViewKeluar = findViewById(R.id.textViewKeluar);
         TextView textViewDurasi = findViewById(R.id.textViewDurasi);
         TextView textViewHarga = findViewById(R.id.textViewHarga);
+        TextView textViewPaymentMethod = findViewById(R.id.textViewPaymentMethod);
 
         btnCancel = findViewById(R.id.btnCancel);
         btnDownloadReceipt = findViewById(R.id.btnDownloadReceipt);
@@ -118,6 +120,27 @@ public class BookDetailsActivity extends AppCompatActivity {
                         // --- SIMPAN DATA UNTUK PROSES CANCEL ---
                         Long totalHargaLong = dataSnapshot.child("totalHarga").getValue(Long.class);
                         bookingTotalHarga = (totalHargaLong != null) ? totalHargaLong.intValue() : 0;
+
+                        // --- AMBIL DATA PAYMENT METHOD ---
+                        String paymentStatus = dataSnapshot.child("payment_status").getValue(String.class);
+                        String paymentChannel = dataSnapshot.child("payment_channel").getValue(String.class); // <-- TAMBAHAN: Tarik data channel dari Xendit
+
+                        if (paymentStatus != null) {
+                            if (paymentStatus.equalsIgnoreCase("WALLET")) {
+                                textViewPaymentMethod.setText("My Wallet");
+                            } else {
+                                // Kalau bukan WALLET, cek apakah ada nama bank/ewallet dari Xendit
+                                if (paymentChannel != null && !paymentChannel.trim().isEmpty()) {
+                                    textViewPaymentMethod.setText("Online (" + paymentChannel + ")"); // Contoh: Online (QRIS)
+                                } else {
+                                    // Fallback kalau data channel kosong (misal data booking lama)
+                                    textViewPaymentMethod.setText("Online Payment");
+                                }
+                            }
+                        } else {
+                            textViewPaymentMethod.setText("-");
+                        }
+                        // --- END AMBIL DATA PAYMENT METHOD ---
 
                         // ASUMSI: "slot" berisi "S1", "S2", dll.
                         bookingSlotId = dataSnapshot.child("slot").getValue(String.class);
@@ -291,38 +314,55 @@ public class BookDetailsActivity extends AppCompatActivity {
 
         slotRef.updateChildren(slotUpdate).addOnSuccessListener(aVoid -> {
             // Slot berhasil di-update, lanjut ke Langkah 3
-            deleteBookingEntry();
+            updateBookingStatusToCancelled(); // <-- UBAH PANGGILAN DI SINI
         }).addOnFailureListener(e -> {
             // Ini adalah status yang buruk (refund berhasil, tapi slot gagal update)
             Toast.makeText(BookDetailsActivity.this, "Refund success, but failed to update slot. Please contact support.", Toast.LENGTH_LONG).show();
-            // Tetap hapus bookingnya agar tidak "menggantung"
-            deleteBookingEntry();
+            // Tetap update status bookingnya
+            updateBookingStatusToCancelled(); // <-- UBAH PANGGILAN DI SINI
         });
     }
 
     // --- FUNGSI BARU (LANGKAH 3) ---
-    private void deleteBookingEntry() {
-        bookingsRef.child(bookingId).removeValue().addOnSuccessListener(aVoid -> {
-            // SUKSES TOTAL
-            Toast.makeText(BookDetailsActivity.this, "Booking successfully cancelled. Refund processed.", Toast.LENGTH_SHORT).show();
+    private void updateBookingStatusToCancelled() {
+        bookingsRef.child(bookingId).child("status").setValue("cancelled")
+                .addOnSuccessListener(aVoid -> {
 
-            // Hapus dari SharedPreferences lokal
-            if (scannedSet != null) {
-                scannedSet.remove(bookingId);
-                getSharedPreferences("qr_status", MODE_PRIVATE)
-                        .edit()
-                        .putStringSet("scannedBookings", scannedSet)
-                        .apply();
-            }
+                    // === TAMBAHAN BARU: CATAT KE HISTORY WALLET (FOLDER TOPUPS) ===
+                    String refundId = "RF-" + bookingId + "-" + System.currentTimeMillis();
+                    DatabaseReference topupsRef = FirebaseDatabase.getInstance().getReference("topups").child(refundId);
 
-            // Kembali ke halaman utama
-            navigateToUpcoming();
+                    Map<String, Object> refundData = new HashMap<>();
+                    refundData.put("userId", mAuth.getCurrentUser().getUid());
+                    refundData.put("amount", bookingTotalHarga);
+                    refundData.put("status", "SUCCESS");
+                    refundData.put("type", "REFUND");
+                    refundData.put("title", "Refund Cancel Booking");
+                    // Untuk timestamp, pake waktu saat ini
+                    refundData.put("timestamp", System.currentTimeMillis());
 
-        }).addOnFailureListener(e -> {
-            Toast.makeText(BookDetailsActivity.this, "Refund/Slot update success, but failed to delete booking entry.", Toast.LENGTH_LONG).show();
-            // Tetap navigasi kembali
-            navigateToUpcoming();
-        });
+                    topupsRef.setValue(refundData).addOnSuccessListener(aVoid2 -> {
+                        // SUKSES TOTAL (Booking Cancel + Saldo Balik + History Tercatat)
+                        Toast.makeText(BookDetailsActivity.this, "Booking cancelled. Refund IDR " + bookingTotalHarga + " processed.", Toast.LENGTH_SHORT).show();
+
+                        // Hapus dari SharedPreferences lokal
+                        if (scannedSet != null) {
+                            scannedSet.remove(bookingId);
+                            getSharedPreferences("qr_status", MODE_PRIVATE)
+                                    .edit()
+                                    .putStringSet("scannedBookings", scannedSet)
+                                    .apply();
+                        }
+
+                        // Kembali ke halaman utama
+                        navigateToUpcoming();
+                    });
+                    // === END TAMBAHAN BARU ===
+
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(BookDetailsActivity.this, "Refund/Slot update success, but failed to update booking status.", Toast.LENGTH_LONG).show();
+                    navigateToUpcoming();
+                });
     }
 
 

@@ -1,7 +1,5 @@
 package com.example.parkeeriotapp;
 
-// Pastikan nama paket (package) di atas sesuai dengan project Anda
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,9 +41,8 @@ public class HistoryAdapter extends BaseAdapter {
         return position;
     }
 
-    // Fungsi formatTanggal() dan formatJam() Anda sudah benar
-    // karena BookActivity menyimpan dalam format "dd-MMM-yyyy HH:mm"
     private String formatTanggal(String datetime) {
+        if (datetime == null) return "";
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.getDefault());
             Date date = sdf.parse(datetime);
@@ -56,10 +53,11 @@ public class HistoryAdapter extends BaseAdapter {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return "";
+        return datetime;
     }
 
     private String formatJam(String datetime) {
+        if (datetime == null) return "";
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.getDefault());
             Date date = sdf.parse(datetime);
@@ -70,45 +68,47 @@ public class HistoryAdapter extends BaseAdapter {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return "";
+        return datetime;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = inflater.inflate(R.layout.layout_item_history, parent, false);
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.layout_item_history, parent, false);
+        }
 
         Booking booking = historyList.get(position);
 
-        TextView tvTanggalHeader = view.findViewById(R.id.tvTanggalHeader);
+        TextView tvTanggalHeader = convertView.findViewById(R.id.tvTanggalHeader);
         tvTanggalHeader.setText(formatTanggal(booking.getJamMasuk()));
 
-        TextView tvTotalHarga = view.findViewById(R.id.tvTotalHarga);
+        TextView tvTotalHarga = convertView.findViewById(R.id.tvTotalHarga);
         tvTotalHarga.setText(String.format("%,.0f", (double) booking.getTotalHarga()).replace(",", "."));
 
-        ((TextView) view.findViewById(R.id.tvMallName)).setText(booking.getMallName());
-        ((TextView) view.findViewById(R.id.tvPlate)).setText(booking.getPlate());
+        ((TextView) convertView.findViewById(R.id.tvMallName)).setText(booking.getMallName());
+        ((TextView) convertView.findViewById(R.id.tvPlate)).setText(booking.getPlate());
 
-        ((TextView) view.findViewById(R.id.tvJamMasuk)).setText(formatJam(booking.getJamMasuk()));
-        ((TextView) view.findViewById(R.id.tvTglMasuk)).setText(formatTanggal(booking.getJamMasuk()));
+        ((TextView) convertView.findViewById(R.id.tvJamMasuk)).setText(formatJam(booking.getJamMasuk()));
+        ((TextView) convertView.findViewById(R.id.tvTglMasuk)).setText(formatTanggal(booking.getJamMasuk()));
 
-        ((TextView) view.findViewById(R.id.tvJamKeluar)).setText(formatJam(booking.getJamKeluar()));
-        ((TextView) view.findViewById(R.id.tvTglKeluar)).setText(formatTanggal(booking.getJamKeluar()));
+        ((TextView) convertView.findViewById(R.id.tvJamKeluar)).setText(formatJam(booking.getJamKeluar()));
+        ((TextView) convertView.findViewById(R.id.tvTglKeluar)).setText(formatTanggal(booking.getJamKeluar()));
 
-        TextView tvStatus = view.findViewById(R.id.tvStatus);
+        TextView tvStatus = convertView.findViewById(R.id.tvStatus);
 
-        // --- PENYESUAIAN: Ganti isExpired() dengan getStatus() ---
-        // Logika lama: tvStatus.setText(booking.isExpired() ? "EXPIRED" : "ACTIVE");
-
-        // Logika baru:
         String status = booking.getStatus();
-        if (status.equals("done")) {
-            tvStatus.setText("COMPLETED");
-        } else if (status.equals("cancelled")) {
-            tvStatus.setText("CANCELLED");
+        if (status != null) {
+            if (status.equalsIgnoreCase("done")) {
+                tvStatus.setText("COMPLETED");
+            } else if (status.equalsIgnoreCase("cancelled") || status.equalsIgnoreCase("expired")) {
+                tvStatus.setText("CANCELLED");
+            } else {
+                tvStatus.setText(status.toUpperCase());
+            }
         } else {
-            tvStatus.setText(status.toUpperCase()); // Fallback
+            tvStatus.setText("UNKNOWN");
         }
 
-        return view;
+        return convertView;
     }
 }

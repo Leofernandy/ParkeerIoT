@@ -331,11 +331,12 @@
                         android:textSize="13dp"></TextView>
 
                     <TextView
+                        android:id="@+id/textViewPaymentMethod"
                         android:layout_width="184dp"
                         android:layout_height="39dp"
                         android:background="#F5F5F5"
                         android:layout_gravity="right"
-                        android:text="DANA"
+                        android:text="Loading..."
                         android:textColor="@color/black"
                         android:gravity="center_vertical"
                         android:paddingLeft="18dp"
