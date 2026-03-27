@@ -64,7 +64,7 @@ unsigned long servoMasukOpenTime = 0;
 unsigned long servoKeluarOpenTime = 0;
 bool servoMasukIsOpen = false;
 bool servoKeluarIsOpen = false;
-const long servoOpenDuration = 350; // Durasi palang terbuka (ms)
+const long servoOpenDuration = 3000; // Durasi palang terbuka (ms)
 
 // ===== VARIABEL STATUS =====
 bool isWaitingForScan = false;     
@@ -83,7 +83,7 @@ void setup(){
   display.init();
   display.flipScreenVertically();
   display.clear();
-  display.drawString(0,0,"Connecting WiFi...");
+  display.drawString(0,0,"Starting up...");
   display.display();
 
   qrcode.init(); 
@@ -100,11 +100,36 @@ void setup(){
   pinMode(IR_MASUK, INPUT);
   pinMode(IR_KELUAR, INPUT);
 
+  // --- INISIALISASI SERVO ---
   servoMasuk.attach(SERVO_MASUK);
   servoKeluar.attach(SERVO_KELUAR);
-  servoMasuk.write(0);
-  servoKeluar.write(0);
+  
+  // ==========================================
+  // --- STARTUP TEST SERVO (NAIK TURUN) ---
+  // ==========================================
+  Serial.println("[SYSTEM] Melakukan Test Palang...");
+  display.clear();
+  display.drawString(0,0,"Testing Gates...");
+  display.display();
+  
+  beep(); // Bunyi sekali tanda test mulai
+  
+  // 1. Palang Naik (Buka) - Trik 85 derajat
+  servoMasuk.write(85);
+  servoKeluar.write(85);
+  delay(1000); // Tahan posisi terbuka selama 1 detik
+  
+  // 2. Palang Turun (Tutup) - Trik 5 derajat
+  servoMasuk.write(5);
+  servoKeluar.write(5);
+  delay(1000); // Tahan posisi tertutup selama 1 detik
+  // ==========================================
 
+  // Lanjut koneksi WiFi
+  display.clear();
+  display.drawString(0,0,"Connecting WiFi...");
+  display.display();
+  
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   while(WiFi.status()!=WL_CONNECTED){
     delay(300);
@@ -254,7 +279,7 @@ void checkScanStatus() {
         Serial.println("[CHECK SCAN] -> SUKSES! Membuka gerbang.");
         isWaitingForScan = false; 
         
-        servoMasuk.write(90); 
+        servoMasuk.write(85); // Trik 85 derajat
         beep(); 
         servoMasukIsOpen = true;
         servoMasukOpenTime = millis();
@@ -314,19 +339,19 @@ void palang(){
   
   // --- Timer Tutup Palang Masuk ---
   if(servoMasukIsOpen && (now - servoMasukOpenTime > servoOpenDuration)){
-    servoMasuk.write(0);
+    servoMasuk.write(5); // Trik 5 derajat
     servoMasukIsOpen = false;
   }
 
   // --- Logika Palang Keluar ---
   if(digitalRead(IR_KELUAR)==LOW && !servoKeluarIsOpen){
-    servoKeluar.write(90); 
+    servoKeluar.write(85); // Trik 85 derajat
     beep(); 
     servoKeluarIsOpen = true;
     servoKeluarOpenTime = now;
   }
   if(servoKeluarIsOpen && (now - servoKeluarOpenTime > servoOpenDuration)){
-    servoKeluar.write(0);
+    servoKeluar.write(5); // Trik 5 derajat
     servoKeluarIsOpen = false;
   }
 }
