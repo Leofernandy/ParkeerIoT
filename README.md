@@ -76,9 +76,6 @@ The system synchronizes **Real-time Database** events between the Android App an
 
 ## 📄 Project Members
 * Leo Fernandy
-* Leonardo
-* Vincent Liawis
-* Stanley Lim
 
 **🏫 Supervisor:** Mr. Ade Maulana
 
