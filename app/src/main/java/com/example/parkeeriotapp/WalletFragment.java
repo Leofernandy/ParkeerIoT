@@ -37,7 +37,7 @@ import java.util.Locale;
 public class WalletFragment extends Fragment {
 
     private TextView txvSaldo, txvPhone;
-    private ImageView imvTopup;
+    private View btnTopup;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
@@ -69,14 +69,13 @@ public class WalletFragment extends Fragment {
         // 🔧 Inisialisasi komponen UI
         txvSaldo = view.findViewById(R.id.txvSaldo);
         txvPhone = view.findViewById(R.id.txvPhone);
-        imvTopup = view.findViewById(R.id.imvTopup);
+        btnTopup = view.findViewById(R.id.btnTopup);
 
-        // --- TAMBAHAN BARU: Inisialisasi ListView History ---
+        // Inisialisasi ListView History
         listWalletHistory = view.findViewById(R.id.listWalletHistory);
         historyList = new ArrayList<>();
         adapter = new WalletHistoryAdapter(requireContext(), historyList);
         listWalletHistory.setAdapter(adapter);
-        // --- END TAMBAHAN BARU ---
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -89,7 +88,7 @@ public class WalletFragment extends Fragment {
         String uid = auth.getCurrentUser().getUid();
         DocumentReference userRef = db.collection("users").document(uid);
 
-        // 📥 Ganti .get() menjadi .addSnapshotListener agar Real-time!
+        // 📥 Real-time listener saldo & profil
         userRef.addSnapshotListener((document, e) -> {
             if (e != null) {
                 Toast.makeText(requireContext(), "Gagal memonitor saldo", Toast.LENGTH_SHORT).show();
@@ -108,34 +107,31 @@ public class WalletFragment extends Fragment {
                     txvPhone.setText(phone != null ? phone : "-");
                 }
 
-                // UPDATE SALDO INSTAN! Begitu Firebase berubah, TV ini langsung berubah
+                // Update teks saldo
                 txvSaldo.setText("IDR " + String.format("%,d", saldo != null ? saldo : 0).replace(',', '.'));
             }
         });
 
-        // --- TAMBAHAN BARU: Load History dari Realtime Database ---
+        // Load History dari Realtime Database (dengan pengelompokan tanggal rapi)
         loadTransactionHistory(uid);
-        // --- END TAMBAHAN BARU ---
 
-        // 🔹 Perbesar area klik tombol Top-up
-        imvTopup.post(() -> expandClickArea(imvTopup, 24)); // tambah 24dp area sentuhan
-
-        // 💰 Tombol Top-up (Sekarang buka TopUpActivity agar bayar lewat Xendit)
-        imvTopup.setOnClickListener(v -> {
-            // Ubah logika tombol ini agar membuka halaman Top Up Xendit yang baru
+        // 💰 Tombol Top Up
+        btnTopup.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), TopUpActivity.class);
             startActivity(intent);
         });
     }
 
-    // --- TAMBAHAN BARU: Fungsi untuk menarik data History ---
+    // --- FUNGSI LOAD & GROUP HISTORY TRANSAKSI (GAYA OVO / E-WALLET) ---
     private void loadTransactionHistory(String uid) {
         FirebaseDatabase.getInstance().getReference("topups")
                 .orderByChild("userId").equalTo(uid)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        historyList.clear();
+                        ArrayList<WalletHistory> rawItems = new ArrayList<>();
+                        SimpleDateFormat headerDateFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("in", "ID"));
+
                         for (DataSnapshot ds : snapshot.getChildren()) {
                             String keyId = ds.getKey();
                             String channel = ds.child("payment_channel").getValue(String.class);
@@ -143,50 +139,65 @@ public class WalletFragment extends Fragment {
                             String dbTitle = ds.child("title").getValue(String.class);
                             Long timestamp = ds.child("timestamp").getValue(Long.class);
 
-                            long rawTimestamp = (timestamp != null) ? timestamp : 0; // Ambil angka mentahnya
+                            long rawTimestamp = (timestamp != null) ? timestamp : System.currentTimeMillis();
 
-                            String dateStr = "-";
-                            if (timestamp != null) {
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault());
-                                dateStr = sdf.format(new Date(timestamp));
-                            }
+                            // Format tanggal banner (misal: "30 AGU 2026")
+                            String headerDate = headerDateFormat.format(new Date(rawTimestamp)).toUpperCase();
 
-                            String displayTitle = "";
-                            String displayAmount = "";
-                            int typeInt = 1;
+                            String displayTitle;
+                            String displaySubtitle;
+                            String displayAmount;
+                            int typeInt;
+
+                            long amt = (amount != null) ? amount : 0;
+                            String formattedAmount = String.format("%,d", amt).replace(',', '.');
 
                             if (keyId != null && keyId.startsWith("RF")) {
-                                displayTitle = (dbTitle != null) ? dbTitle : "Refund Booking";
-                                displayAmount = "+ IDR " + String.format("%,d", amount != null ? amount : 0).replace(',', '.');
+                                displayTitle = (dbTitle != null) ? dbTitle : "Parkeer Refund";
+                                displaySubtitle = "Pengembalian Dana";
+                                displayAmount = "+Rp" + formattedAmount;
                                 typeInt = 3;
                             } else if (keyId != null && keyId.startsWith("PY")) {
-                                displayTitle = (dbTitle != null) ? dbTitle : "Payment Booking";
-                                displayAmount = "- IDR " + String.format("%,d", amount != null ? amount : 0).replace(',', '.');
+                                displayTitle = (dbTitle != null) ? dbTitle : "Pembayaran Parkir";
+                                displaySubtitle = "Pembayaran";
+                                displayAmount = "-Rp" + formattedAmount;
                                 typeInt = 2;
                             } else {
-                                displayTitle = "Top Up via " + (channel != null ? channel : "Online");
-                                displayAmount = "+ IDR " + String.format("%,d", amount != null ? amount : 0).replace(',', '.');
+                                String cleanChannel = (channel != null && !channel.isEmpty()) ? channel : "Xendit";
+                                if (!cleanChannel.toLowerCase().startsWith("bank") && !cleanChannel.toLowerCase().contains("qris") && !cleanChannel.toLowerCase().contains("ovo") && !cleanChannel.toLowerCase().contains("dana")) {
+                                    displayTitle = "Bank " + cleanChannel;
+                                } else {
+                                    displayTitle = cleanChannel;
+                                }
+                                displaySubtitle = "Top Up";
+                                displayAmount = "+Rp" + formattedAmount;
                                 typeInt = 1;
                             }
 
-                            // Tambahkan pakai .add biasa (tidak perlu add(0) lagi) beserta rawTimestamp-nya
-                            historyList.add(new WalletHistory(
+                            rawItems.add(new WalletHistory(
                                     displayTitle,
+                                    displaySubtitle,
                                     displayAmount,
-                                    dateStr,
+                                    headerDate,
                                     typeInt,
-                                    rawTimestamp // <-- Lempar rawTimestamp kesini
+                                    rawTimestamp
                             ));
                         }
 
-                        // === LOGIKA PENGURUTAN (SORTING) TERBARU KE TERLAMA ===
-                        Collections.sort(historyList, new Comparator<WalletHistory>() {
-                            @Override
-                            public int compare(WalletHistory h1, WalletHistory h2) {
-                                // h2 dibanding h1 supaya yang paling besar (terbaru) ada di atas
-                                return Long.compare(h2.getTimestamp(), h1.getTimestamp());
+                        // Urutkan transaksi dari yang paling baru ke paling lama
+                        Collections.sort(rawItems, (h1, h2) -> Long.compare(h2.getTimestamp(), h1.getTimestamp()));
+
+                        // Sisipkan Header Tanggal otomatis saat tanggal berganti
+                        historyList.clear();
+                        String lastHeader = "";
+                        for (WalletHistory item : rawItems) {
+                            String itemHeader = item.getDate();
+                            if (!itemHeader.equals(lastHeader)) {
+                                historyList.add(new WalletHistory(itemHeader)); // Tambahkan banner tanggal
+                                lastHeader = itemHeader;
                             }
-                        });
+                            historyList.add(item); // Tambahkan item transaksi
+                        }
 
                         adapter.notifyDataSetChanged();
                     }

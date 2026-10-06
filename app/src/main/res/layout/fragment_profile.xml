@@ -1,349 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white"
+    tools:context=".ProfileFragment">
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".ProfileFragment">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="20dp"
+            android:paddingBottom="8dp"
+            android:text="Account"
+            android:textColor="@color/black"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/textView"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingTop="18dp"
-                android:text="Account"
-                android:textColor="@color/black"
-                android:textSize="24dp"
-                android:textStyle="bold" />
+                android:padding="16dp">
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="369dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="15dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="6dp">
+                <!-- Foto Profil (Circular Card) -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvImageProfile"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#F0F0F0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="15dp">
-
-                    <!-- Foto Profil -->
                     <ImageView
                         android:id="@+id/imageProfile"
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/pp_default"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" />
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/pp_default" />
+                </androidx.cardview.widget.CardView>
 
-                    <!-- Text info -->
-                    <LinearLayout
-                        android:id="@+id/infoContainer"
-                        android:layout_width="0dp"
+                <!-- Text info -->
+                <LinearLayout
+                    android:id="@+id/infoContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintStart_toEndOf="@id/cvImageProfile"
+                    app:layout_constraintTop_toTopOf="@id/cvImageProfile"
+                    app:layout_constraintBottom_toBottomOf="@id/cvImageProfile"
+                    app:layout_constraintEnd_toStartOf="@id/imvEditProfile">
+
+                    <TextView
+                        android:id="@+id/txvFullname"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="15dp"
-                        app:layout_constraintStart_toEndOf="@id/imageProfile"
-                        app:layout_constraintTop_toTopOf="@id/imageProfile"
-                        app:layout_constraintBottom_toBottomOf="@id/imageProfile"
-                        app:layout_constraintEnd_toStartOf="@id/imvEditProfile"
-                        app:layout_constraintHorizontal_bias="0.0">
+                        android:text="Stanley"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/txvFullname"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Stanley"
-                            android:textColor="@color/black"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/txvPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="085377658876"
+                        android:textColor="#666666"
+                        android:textSize="11sp"
+                        android:layout_marginTop="3dp" />
 
-                        <TextView
-                            android:id="@+id/txvPhone"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="085377658876"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp" />
+                    <TextView
+                        android:id="@+id/txvEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Stanley123@gmail.com"
+                        android:textColor="#666666"
+                        android:textSize="11sp"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/txvEmail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Stanley123@gmail.com"
-                            android:textSize="11sp"
-                            android:layout_marginTop="4dp" />
-                    </LinearLayout>
+                <!-- Tombol Edit -->
+                <ImageView
+                    android:id="@+id/imvEditProfile"
+                    android:layout_width="75dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/edit_profile_button"
+                    app:layout_constraintTop_toTopOf="@id/imageProfile"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <!-- Tombol Edit -->
-                    <ImageView
-                        android:id="@+id/imvEditProfile"
-                        android:layout_width="75dp"
-                        android:layout_height="17dp"
-                        android:src="@drawable/edit_profile_button"
-                        app:layout_constraintTop_toTopOf="@id/imageProfile"
-                        app:layout_constraintEnd_toEndOf="parent" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
+        <!-- SECTION: ACCOUNT SETTINGS -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp"
+            android:text="Account Settings"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold" />
 
+        <!-- MENU: MY VEHICLES -->
+        <LinearLayout
+            android:id="@+id/llyMyVehicles"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
 
-            </androidx.cardview.widget.CardView>
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/myvehicles_icon" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="15dp"
-                android:text="Account Settings"
+                android:paddingStart="12dp"
+                android:text="My Vehicles"
                 android:textColor="@color/black"
-                android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textSize="13sp" />
 
-            <LinearLayout
-                android:id="@+id/llyMyVehicles"
-                android:layout_width="367dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:src="@drawable/myvehicles_icon" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:text="My Vehicles"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:layout_width="7.74dp"
-                    android:layout_height="13.85dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="125dp"
-                    android:src="@drawable/right_arrow" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="360dp"
+            <Space
+                android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#CCCCCC" />
+                android:layout_weight="1" />
 
-            <LinearLayout
-                android:id="@+id/llySetPin"
-                android:layout_width="367dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:src="@drawable/setpin_icon" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:text="Set Pin"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:layout_width="7.74dp"
-                    android:layout_height="13.85dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="125dp"
-                    android:src="@drawable/right_arrow" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="360dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#CCCCCC" />
-
-            <LinearLayout
-                android:id="@+id/llyLanguage"
-                android:layout_width="367dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:src="@drawable/change_lang" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:text="Change Language"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:layout_width="7.74dp"
-                    android:layout_height="13.85dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="125dp"
-                    android:src="@drawable/right_arrow" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="360dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#CCCCCC" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="15dp"
-                android:text="Services"
-                android:textColor="@color/black"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/llyHowUse"
-                android:layout_width="367dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:src="@drawable/question_icon" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:text="How to Use"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:layout_width="7.74dp"
-                    android:layout_height="13.85dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="125dp"
-                    android:src="@drawable/right_arrow" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="360dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#CCCCCC" />
-
-            <LinearLayout
-                android:id="@+id/llyCS"
-                android:layout_width="367dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:src="@drawable/cs_icon" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:text="Customer Service"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:layout_width="7.74dp"
-                    android:layout_height="13.85dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="125dp"
-                    android:src="@drawable/right_arrow" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="360dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#CCCCCC" />
-
-            <LinearLayout
-                android:id="@+id/llyLogout"
-                android:layout_width="367dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="21dp"
-                    android:layout_height="21dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:src="@drawable/logout_icon" />
-
-                <TextView
-                    android:layout_width="200dp"
-                    android:layout_height="50dp"
-                    android:gravity="center_vertical"
-                    android:paddingHorizontal="8dp"
-                    android:text="Log Out"
-                    android:textColor="#FF0000"
-                    android:textSize="12sp" />
-
-                <ImageView
-                    android:layout_width="7.74dp"
-                    android:layout_height="13.85dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="125dp"
-                    android:src="@drawable/right_arrow_red" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="360dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center_horizontal"
-                android:background="#CCCCCC" />
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="14dp"
+                android:src="@drawable/right_arrow" />
         </LinearLayout>
-    </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#EAEAEA" />
+
+        <!-- MENU: SET PIN -->
+        <LinearLayout
+            android:id="@+id/llySetPin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/setpin_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:text="Set Pin"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="14dp"
+                android:src="@drawable/right_arrow" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#EAEAEA" />
+
+        <!-- MENU: CHANGE LANGUAGE -->
+        <LinearLayout
+            android:id="@+id/llyLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/change_lang" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:text="Change Language"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="14dp"
+                android:src="@drawable/right_arrow" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#EAEAEA" />
+
+        <!-- SECTION: SERVICES -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="6dp"
+            android:text="Services"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <!-- MENU: HOW TO USE -->
+        <LinearLayout
+            android:id="@+id/llyHowUse"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/question_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:text="How to Use"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="14dp"
+                android:src="@drawable/right_arrow" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#EAEAEA" />
+
+        <!-- MENU: CUSTOMER SERVICE -->
+        <LinearLayout
+            android:id="@+id/llyCS"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/cs_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:text="Customer Service"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="14dp"
+                android:src="@drawable/right_arrow" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#EAEAEA" />
+
+        <!-- MENU: LOG OUT -->
+        <LinearLayout
+            android:id="@+id/llyLogout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginHorizontal="20dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="21dp"
+                android:src="@drawable/logout_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="12dp"
+                android:text="Log Out"
+                android:textColor="#FF3B30"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="8dp"
+                android:layout_height="14dp"
+                android:src="@drawable/right_arrow_red" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="20dp"
+            android:background="#EAEAEA" />
+
+    </LinearLayout>
+</ScrollView>

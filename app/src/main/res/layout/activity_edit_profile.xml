@@ -1,134 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white"
     tools:context=".EditProfileActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingBottom="30dp">
 
-
-
-        <LinearLayout
-            android:layout_width="319dp"
-            android:layout_height="27dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="22dp"
-            android:orientation="horizontal">
+        <!-- HEADER -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp">
 
             <ImageView
                 android:id="@+id/imvLeftArrow"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:src="@drawable/leftarrow"></ImageView>
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/leftarrow" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="77dp"
-                android:layout_marginTop="-4dp"
+                android:layout_centerInParent="true"
                 android:text="Edit Profile"
                 android:textColor="@color/black"
-                android:textSize="24dp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
+        </RelativeLayout>
 
-        </LinearLayout>
-
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="20dp"
+        <!-- 📷 FOTO PROFIL CONTAINER (CIRCULAR WITH FLOATING BADGE) -->
+        <RelativeLayout
+            android:id="@+id/flPhotoContainer"
+            android:layout_width="104dp"
+            android:layout_height="104dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/pp_default"/>
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="-25dp"
-            android:layout_marginLeft="25dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/edit_photo_icon"/>
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:focusable="true">
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_centerInParent="true"
+                app:cardCornerRadius="46dp"
+                app:cardElevation="3dp"
+                app:cardBackgroundColor="#F0F0F0">
+
+                <ImageView
+                    android:id="@+id/imageProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/pp_default" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- EDIT BADGE ICON (Floating on top) -->
+            <ImageView
+                android:id="@+id/imvEditPhoto"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:elevation="8dp"
+                android:src="@drawable/edit_photo_icon" />
+        </RelativeLayout>
+
+        <!-- CARD INPUT FORM -->
         <androidx.cardview.widget.CardView
-            android:layout_gravity="center_horizontal"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="6dp"
-            android:layout_width="369dp"
-            android:layout_height="241dp"
-            android:paddingBottom="19dp"
-            android:layout_marginTop="15dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/white">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Full Name"
+                    android:textColor="#666666"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/edtFullname"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="319dp"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="19dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="14dp"
                     android:background="@drawable/rounded_edt"
-                    android:ems="10"
-                    android:hint="Stanley"
-                    android:inputType="text"
-                    android:paddingHorizontal="25dp"
-                    android:textSize="13dp"/>
+                    android:hint="Full Name"
+                    android:inputType="textPersonName"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phone Number"
+                    android:textColor="#666666"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/edtPhone"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="319dp"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="19dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="14dp"
                     android:background="@drawable/rounded_edt"
-                    android:ems="10"
-                    android:hint="081234567890"
-                    android:inputType="text"
-                    android:paddingHorizontal="25dp"
-                    android:textSize="13dp"></EditText>
+                    android:hint="Phone Number"
+                    android:inputType="phone"
+                    android:paddingHorizontal="16dp"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email Address (Cannot be changed)"
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
 
                 <EditText
                     android:id="@+id/edtEmail"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="319dp"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="19dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="6dp"
                     android:background="@drawable/rounded_edt"
-                    android:ems="10"
-                    android:hint="Stanley123@gmail.com"
-                    android:inputType="text"
-                    android:paddingHorizontal="25dp"
                     android:enabled="false"
-                    android:textSize="13dp"></EditText>
+                    android:hint="Email Address"
+                    android:inputType="textEmailAddress"
+                    android:paddingHorizontal="16dp"
+                    android:textColor="#888888"
+                    android:textSize="13sp" />
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
         <ImageView
-            android:layout_marginTop="15dp"
-
-            android:layout_gravity="center_horizontal"
-            android:layout_width="375dp"
-            android:layout_height="174dp"
-            android:src="@drawable/link_account"/>
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:src="@drawable/link_account" />
 
         <Button
             android:id="@+id/btnSaveProfile"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="369dp"
-            android:layout_height="wrap_content"
-            android:text="Save" />
-
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/navy"
+            android:text="SAVE CHANGES"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

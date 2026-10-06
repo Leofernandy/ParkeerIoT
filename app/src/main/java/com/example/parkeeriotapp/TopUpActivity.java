@@ -51,11 +51,11 @@ public class TopUpActivity extends AppCompatActivity {
 
     private void generateTopUpInvoice(int amount) {
         btnContinue.setEnabled(false);
+        btnContinue.setText("Menghubungkan ke Pembayaran...");
         String uid = auth.getCurrentUser().getUid();
-        // FORMAT ID: TU-UID-TIMESTAMP (Penting buat Cloud Functions!)
         String topUpId = "TU-" + uid + "-" + System.currentTimeMillis();
 
-        String url = "https://createinvoice-d2jn6f3etq-uc.a.run.app";
+        String url = com.example.parkeeriotapp.utils.Constants.ENDPOINT_CREATE_INVOICE;
         JSONObject params = new JSONObject();
         try {
             params.put("order_id", topUpId);
@@ -64,21 +64,37 @@ public class TopUpActivity extends AppCompatActivity {
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, params,
                 res -> {
+                    btnContinue.setEnabled(true);
+                    btnContinue.setText("CONTINUE TO PAYMENT");
                     try {
                         String invoiceUrl = res.getString("invoice_url");
 
-                        // Buka WebView Payment yang sudah kamu punya sebelumnya
                         Intent intent = new Intent(TopUpActivity.this, PaymentWebActivity.class);
                         intent.putExtra("invoiceUrl", invoiceUrl);
-                        intent.putExtra("bookingId", topUpId); // Pakai key yang sama agar WebView bisa pantau status
+                        intent.putExtra("bookingId", topUpId);
                         startActivity(intent);
                         finish();
                     } catch (JSONException e) { e.printStackTrace(); }
                 },
                 err -> {
                     btnContinue.setEnabled(true);
-                    Toast.makeText(this, "Gagal membuat invoice", Toast.LENGTH_SHORT).show();
+                    btnContinue.setText("CONTINUE TO PAYMENT");
+                    String errorMsg = "Gagal membuat invoice";
+                    if (err != null && err.networkResponse != null) {
+                        errorMsg += " (HTTP " + err.networkResponse.statusCode + ")";
+                    } else if (err instanceof com.android.volley.TimeoutError) {
+                        errorMsg += " (Server timeout, silakan coba lagi)";
+                    }
+                    Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show();
                 });
+
+        // 60 detik timeout untuk menangani cold-start server gratis Render
+        req.setRetryPolicy(new com.android.volley.DefaultRetryPolicy(
+                60000,
+                2,
+                1.0f
+        ));
+
         requestQueue.add(req);
     }
 }

@@ -47,13 +47,22 @@ public class PaymentSuccessActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String status = snapshot.child("status").getValue(String.class);
 
+                    // 🚀 TARIK DATA plateScanned DARI FIREBASE
+                    Boolean plateScanned = snapshot.child("plateScanned").getValue(Boolean.class);
+
                     if ("booked".equals(status)) {
-                        Toast.makeText(PaymentSuccessActivity.this, "Pembayaran Lunas!", Toast.LENGTH_LONG).show();
+                        // Kalau AI CCTV udah nge-scan platnya (plateScanned = true)
+                        if (plateScanned != null && plateScanned) {
+                            Toast.makeText(PaymentSuccessActivity.this, "✅ Akses Diterima! Plat nomor terverifikasi.", Toast.LENGTH_LONG).show();
+                        }
+                        // Kalau baru aja selesai bayar (plateScanned masih false/null)
+                        else {
+                            Toast.makeText(PaymentSuccessActivity.this, "💳 Pembayaran Berhasil! Silakan menuju lokasi parkir.", Toast.LENGTH_LONG).show();
+                        }
                     }
-                    // ---> INI LOGIKA BARU UNTUK NANGKAP EXPIRED <---
+                    // ---> LOGIKA EXPIRED <---
                     else if ("expired".equals(status)) {
-                        Toast.makeText(PaymentSuccessActivity.this, "Waktu Habis! Booking Dibatalkan otomatis.", Toast.LENGTH_LONG).show();
-                        // Tutup halaman ini supaya user kembali ke menu sebelumnya
+                        Toast.makeText(PaymentSuccessActivity.this, "⏳ Waktu Habis! Booking Dibatalkan otomatis.", Toast.LENGTH_LONG).show();
                         finish();
                     }
                 }

@@ -70,10 +70,36 @@ const long servoOpenDuration = 3000; // Durasi palang terbuka (ms)
 bool isWaitingForScan = false;     
 bool anySlotBooked = false;        
 unsigned long lastBookingCheck = 0; 
+unsigned long waitingStartTime = 0;
 
+// Beep mandiri tanpa memakai timer LEDC ESP32 (mencegah tabrakan sinyal servo)
 void beep(){
-  tone(BUZZER, 2000); delay(90);
-  noTone(BUZZER);
+  for(int i = 0; i < 150; i++){
+    digitalWrite(BUZZER, HIGH);
+    delayMicroseconds(250);
+    digitalWrite(BUZZER, LOW);
+    delayMicroseconds(250);
+  }
+}
+
+// Sudut palang standar dan aman
+#define SUDUT_BUKA 90
+#define SUDUT_TUTUP 10
+
+void bukaPalangMasuk(){
+  servoMasuk.write(SUDUT_BUKA);
+}
+
+void tutupPalangMasuk(){
+  servoMasuk.write(SUDUT_TUTUP);
+}
+
+void bukaPalangKeluar(){
+  servoKeluar.write(SUDUT_BUKA);
+}
+
+void tutupPalangKeluar(){
+  servoKeluar.write(SUDUT_TUTUP);
 }
 
 void setup(){
@@ -100,30 +126,64 @@ void setup(){
   pinMode(IR_MASUK, INPUT);
   pinMode(IR_KELUAR, INPUT);
 
-  // --- INISIALISASI SERVO ---
-  servoMasuk.attach(SERVO_MASUK);
-  servoKeluar.attach(SERVO_KELUAR);
-  
-  // ==========================================
-  // --- STARTUP TEST SERVO (NAIK TURUN) ---
-  // ==========================================
-  Serial.println("[SYSTEM] Melakukan Test Palang...");
+  // --- ALOKASI TIMER RESMI ESP32SERVO ---
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+
+  // Konfigurasi Frekuensi PWM 50Hz Standar Servo
+  servoMasuk.setPeriodHertz(50);
+  servoKeluar.setPeriodHertz(50);
+  servoMasuk.attach(SERVO_MASUK, 500, 2400);
+  servoKeluar.attach(SERVO_KELUAR, 500, 2400);
+
+  // ===================================================
+  // --- STARTUP TEST SERVO BERGANTIAN (CLEAR & SOLID) ---
+  // ===================================================
+  Serial.println("[SYSTEM] Melakukan Test Palang Bergantian...");
+
+  // Posisi awal tertutup
+  tutupPalangMasuk();
+  tutupPalangKeluar();
+  delay(500);
+
+  // --- 1. TES PALANG MASUK ---
+  Serial.println("[TEST] 1. Palang Masuk Naik (90 deg)...");
   display.clear();
-  display.drawString(0,0,"Testing Gates...");
+  display.drawString(0, 0, "Testing Gate:");
+  display.drawString(0, 20, "1. Masuk -> BUKA");
   display.display();
-  
-  beep(); // Bunyi sekali tanda test mulai
-  
-  // 1. Palang Naik (Buka) - Trik 85 derajat
-  servoMasuk.write(85);
-  servoKeluar.write(85);
-  delay(1000); // Tahan posisi terbuka selama 1 detik
-  
-  // 2. Palang Turun (Tutup) - Trik 5 derajat
-  servoMasuk.write(5);
-  servoKeluar.write(5);
-  delay(1000); // Tahan posisi tertutup selama 1 detik
-  // ==========================================
+  beep();
+  bukaPalangMasuk();
+  delay(1200);
+
+  Serial.println("[TEST] 1. Palang Masuk Turun (10 deg)...");
+  display.clear();
+  display.drawString(0, 0, "Testing Gate:");
+  display.drawString(0, 20, "1. Masuk -> TUTUP");
+  display.display();
+  tutupPalangMasuk();
+  delay(800);
+
+  // --- 2. TES PALANG KELUAR ---
+  Serial.println("[TEST] 2. Palang Keluar Naik (90 deg)...");
+  display.clear();
+  display.drawString(0, 0, "Testing Gate:");
+  display.drawString(0, 20, "2. Keluar -> BUKA");
+  display.display();
+  beep();
+  bukaPalangKeluar();
+  delay(1200);
+
+  Serial.println("[TEST] 2. Palang Keluar Turun (10 deg)...");
+  display.clear();
+  display.drawString(0, 0, "Testing Gate:");
+  display.drawString(0, 20, "2. Keluar -> TUTUP");
+  display.display();
+  tutupPalangKeluar();
+  delay(800);
+  // ===================================================
 
   // Lanjut koneksi WiFi
   display.clear();
@@ -143,7 +203,7 @@ void setup(){
 
   fetchFirebase();
 
-  // Startup Beep
+  // Startup Beep Selesai
   Serial.println("System Ready!");
   beep(); delay(100); beep();
 }
@@ -153,7 +213,7 @@ void fetchFirebase(){
   int code = fb.getString("slots/"+mallId, raw);
   
   if(code != 200 || raw.length() < 5) {
-    Serial.println("[FETCH] Gagal.");
+    Serial.print("[FETCH] Gagal, code: "); Serial.println(code);
     return; 
   }
   Serial.println("[FETCH] Sukses! Parsing...");
@@ -175,7 +235,9 @@ void fetchFirebase(){
         if(slotStatus[i] == "booked" && slotBookingId[i] != ""){
           anySlotBooked = true; // Ada booking!
           Serial.print("[FETCH] Menemukan slot booked: S");
-          Serial.println(i+1);
+          Serial.print(i+1);
+          Serial.print(" dengan BookingID: ");
+          Serial.println(slotBookingId[i]);
         }
       } else {
         slotBookingId[i] = "";
@@ -264,23 +326,60 @@ void displayQR(String text){
   qrcode.create(text); 
 }
 
+// ===== FUNGSI checkScanStatus DENGAN DEBUG LOG LENGKAP =====
 void checkScanStatus() {
   if (millis() - lastBookingCheck < 1000) return; 
   lastBookingCheck = millis();
 
+  // Timeout: jika sudah 60 detik tidak ada scan dan mobil sudah pergi, batalkan mode scan
+  if (millis() - waitingStartTime > 60000 && digitalRead(IR_MASUK) == HIGH) {
+    Serial.println("[CHECK SCAN] Timeout: Mobil pergi atau scan dibatalkan.");
+    isWaitingForScan = false;
+    return;
+  }
+
   bool gateOpened = false;
+  int foundBookedCount = 0;
+
   for (int i = 0; i < 5; i++) {
     if (slotStatus[i] == "booked" && slotBookingId[i] != "") {
-      String path = "bookings/" + slotBookingId[i] + "/qrScanned";
-      bool isScanned = false; 
-      int code = fb.getBool(path, isScanned); 
+      foundBookedCount++;
+      
+      String pathQR = "bookings/" + slotBookingId[i] + "/qrScanned";
+      String pathPlate = "bookings/" + slotBookingId[i] + "/plateScanned";
+      
+      bool isQrScanned = false; 
+      bool isPlateScanned = false; 
+      
+      // ESP32 cek dua status dari Firebase dengan jeda agar socket aman
+      int codeQR = fb.getBool(pathQR, isQrScanned); 
+      delay(50); // Jeda kecil agar SSL socket stabil
+      int codePlate = fb.getBool(pathPlate, isPlateScanned); 
 
-      if (code == 200 && isScanned == true) {
-        Serial.println("[CHECK SCAN] -> SUKSES! Membuka gerbang.");
+      // Cetak status persis ke Serial Monitor
+      Serial.print("[CHECK SCAN] Slot S"); Serial.print(i+1);
+      Serial.print(" [ID: "); Serial.print(slotBookingId[i]); Serial.println("]");
+      Serial.print("  -> QR Scanned    : "); Serial.print(isQrScanned ? "TRUE" : "FALSE");
+      Serial.print(" (HTTP Code: "); Serial.print(codeQR); Serial.println(")");
+      Serial.print("  -> Plate Scanned : "); Serial.print(isPlateScanned ? "TRUE" : "FALSE");
+      Serial.print(" (HTTP Code: "); Serial.print(codePlate); Serial.println(")");
+
+      // ========================================================
+      // 🚀 DOUBLE SECURITY: Wajib QR == TRUE && Plate == TRUE
+      // ========================================================
+      if (isQrScanned == true && isPlateScanned == true) {
+        Serial.println("==================================================");
+        Serial.println("[CHECK SCAN] -> SUKSES! QR & Plat VALID. MEMBUKA GERBANG!");
+        Serial.println("==================================================");
         isWaitingForScan = false; 
         
-        servoMasuk.write(85); // Trik 85 derajat
+        display.clear();
+        display.drawString(0, 10, "ACCESS GRANTED!");
+        display.drawString(0, 30, "Welcome!");
+        display.display();
+
         beep(); 
+        bukaPalangMasuk();
         servoMasukIsOpen = true;
         servoMasukOpenTime = millis();
         
@@ -290,12 +389,14 @@ void checkScanStatus() {
     }
   }
 
-  if (!gateOpened) {
-    Serial.println("[CHECK SCAN] -> Menunggu scan...");
+  if (foundBookedCount == 0) {
+    Serial.println("[CHECK SCAN] Peringatan: Tidak ada slot 'booked' dengan bookingId!");
+  } else if (!gateOpened) {
+    Serial.println("[CHECK SCAN] -> Menunggu Validasi (Butuh QR & Plat bernilai TRUE)...");
   }
 }
 
-// ===== FUNGSI palang() DIPERBARUI =====
+// ===== FUNGSI palang() =====
 void palang(){
   unsigned long now = millis(); 
 
@@ -304,13 +405,17 @@ void palang(){
 
   // --- Logika Palang Masuk ---
   if(digitalRead(IR_MASUK)==LOW && !servoMasukIsOpen && !isWaitingForScan){
-    Serial.println("[PALANG] Mobil di gerbang masuk.");
+    Serial.println("[PALANG] Mobil di gerbang masuk terdeteksi!");
+    
+    // Tarik data Firebase terbaru lebih dulu agar data booking ter-update!
+    fetchFirebase();
     
     // 1. Cek apakah ada booking aktif di sistem
     if(anySlotBooked){ 
-      Serial.println("[PALANG] Ada booking, tampilkan QR.");
+      Serial.println("[PALANG] Ada slot booked! Menampilkan QR di layar OLED...");
       isWaitingForScan = true;
-      lastBookingCheck = millis(); 
+      waitingStartTime = now;
+      lastBookingCheck = now; 
       displayQR("PARKEERIOT_GATE_01"); 
     } 
     // 2. Cek jika parkir penuh
@@ -318,40 +423,38 @@ void palang(){
       Serial.println("[PALANG] Parkir Penuh.");
       beep(); delay(50); beep(); 
     }
-    // 3. === PERUBAHAN LOGIKA DI SINI (NO BOOKING = NO ENTRY) ===
+    // 3. Jika tidak ada booking sama sekali di sistem -> TOLAK
     else {
-      // Jika tidak ada booking sama sekali di sistem, dan mobil datang -> TOLAK
-      Serial.println("[PALANG] Tidak ada booking. Akses Ditolak.");
+      Serial.println("[PALANG] Tidak ada booking aktif. Akses Ditolak!");
       
       display.clear();
       display.drawString(0, 20, "NO BOOKING FOUND");
       display.drawString(0, 40, "ACCESS DENIED!");
       display.display();
       
-      // Bunyi Alarm Error (Beep 3x)
       beep(); delay(100); beep(); delay(100); beep();
-      
-      delay(2000); // Tahan pesan di layar sebentar agar terbaca
-      
-      // Gerbang TETAP TERTUTUP (Tidak ada servoMasuk.write)
+      delay(2000); 
     }
   }
   
   // --- Timer Tutup Palang Masuk ---
   if(servoMasukIsOpen && (now - servoMasukOpenTime > servoOpenDuration)){
-    servoMasuk.write(5); // Trik 5 derajat
+    Serial.println("[PALANG] Menutup gerbang masuk...");
+    tutupPalangMasuk();
     servoMasukIsOpen = false;
   }
 
   // --- Logika Palang Keluar ---
   if(digitalRead(IR_KELUAR)==LOW && !servoKeluarIsOpen){
-    servoKeluar.write(85); // Trik 85 derajat
+    Serial.println("[PALANG] Mobil di gerbang keluar.");
     beep(); 
+    bukaPalangKeluar();
     servoKeluarIsOpen = true;
     servoKeluarOpenTime = now;
   }
   if(servoKeluarIsOpen && (now - servoKeluarOpenTime > servoOpenDuration)){
-    servoKeluar.write(5); // Trik 5 derajat
+    Serial.println("[PALANG] Menutup gerbang keluar...");
+    tutupPalangKeluar();
     servoKeluarIsOpen = false;
   }
 }
@@ -374,7 +477,7 @@ void loop(){
     checkScanStatus();
   } 
   else {
-    if(now - lastFetch > 300){ 
+    if(now - lastFetch > 1000){ 
       fetchFirebase();
       lastFetch = now;
     }

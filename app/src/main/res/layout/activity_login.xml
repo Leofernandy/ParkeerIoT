@@ -1,31 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/white"
     tools:context=".LoginActivity">
 
     <LinearLayout
-        android:background="@color/white"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp"
         android:gravity="center"
-        android:paddingHorizontal="40dp">
-        <!--
-         PERUBAHAN 1:
-         - layout_width="409dp" -> "match_parent" (Agar memenuhi lebar layar)
-         - paddingTop="20dp" -> Dihapus (agar gravity="center" bekerja sempurna)
-         - paddingHorizontal="40dp" -> DITAMBAHKAN (Ini kuncinya, memberi jarak 40dp di kiri & kanan)
-        -->
+        android:paddingVertical="30dp"
+        android:paddingHorizontal="36dp">
 
         <ImageView
             android:id="@+id/imvLogo"
-            android:layout_width="72.25dp"
+            android:layout_width="72dp"
             android:layout_height="86dp"
             app:srcCompat="@drawable/logo" />
 
@@ -34,106 +28,103 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textSize="24dp"
+            android:textSize="22sp"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:layout_marginTop="27dp"
+            android:layout_marginTop="20dp"
             android:text="Welcome to Parkeer!" />
 
         <TextView
             android:id="@+id/txvSlogan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="4dp"
+            android:textColor="#666666"
+            android:textSize="13sp"
             android:text="Save Time, Park Faster" />
 
         <EditText
             android:id="@+id/edtEmail"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginTop="25dp"
-            android:paddingHorizontal="25dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:paddingHorizontal="20dp"
             android:background="@drawable/rounded_edt"
-            android:ems="10"
-            android:textSize="13dp"
+            android:textSize="13sp"
             android:inputType="textEmailAddress"
-            android:hint="Email Address"
-            />
-        <!-- PERUBAHAN 2: layout_width="319dp" -> "match_parent" -->
+            android:hint="Email Address" />
 
         <EditText
             android:id="@+id/edtPassword"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:paddingHorizontal="25dp"
+            android:layout_height="52dp"
+            android:paddingHorizontal="20dp"
             android:background="@drawable/rounded_edt"
-            android:ems="10"
-            android:textSize="13dp"
+            android:textSize="13sp"
             android:inputType="textPassword"
-            android:layout_marginTop="19dp"
-            android:hint="Password"
-            />
-        <!-- PERUBAHAN 3: layout_width="319dp" -> "match_parent" -->
+            android:layout_marginTop="16dp"
+            android:hint="Password" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
-            <!-- PERUBAHAN 4: layout_width="329dp" -> "match_parent" -->
 
             <CheckBox
                 android:id="@+id/cbxKeepMe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:textColor="@color/navy"
                 android:buttonTint="@color/navy"
-                android:textSize="13dp"
+                android:textSize="12sp"
                 android:text="Keep me logged in" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/txvForgotPass"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:textSize="13dp"
-                android:gravity="right"
+                android:textSize="12sp"
                 android:textColor="@color/navy"
-                android:layout_weight="1"
                 android:text="Forgot Password?" />
         </LinearLayout>
 
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginBottom="5dp"
+            android:layout_height="52dp"
             android:background="@drawable/rounded_edt"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             android:text="LOGIN" />
-        <!-- PERUBAHAN 5: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:layout_marginVertical="14dp"
+            android:gravity="center"
             android:orientation="horizontal">
-            <!-- PERUBAHAN 6: layout_width="319dp" -> "match_parent" & gravity="center" -->
 
             <TextView
                 android:id="@+id/txvDontHaveAcc"
                 android:layout_width="wrap_content"
-                android:layout_marginVertical="15dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/greytua"
-                android:textSize="13dp"
+                android:textSize="13sp"
                 android:text="Don't have an account?" />
 
             <TextView
                 android:id="@+id/txvLinkSignUp"
                 android:layout_width="wrap_content"
-                android:layout_marginVertical="15dp"
-                android:textSize="13dp"
+                android:textSize="13sp"
+                android:textStyle="bold"
                 android:layout_height="wrap_content"
                 android:textColor="@color/navy"
                 android:text=" Sign Up" />
@@ -144,77 +135,65 @@
             android:id="@+id/textView5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="13dp"
+            android:textSize="12sp"
             android:gravity="center"
             android:textColor="@color/greytua"
             android:text="─────────── or continue with ───────────" />
-        <!-- PERUBAHAN 7: layout_width="319dp" -> "match_parent" -->
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="55dp"
-            android:layout_marginVertical="15dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="16dp"
             android:gravity="center"
             android:orientation="horizontal">
-            <!-- PERUBAHAN 8: layout_width="319dp" -> "match_parent" & gravity="center" -->
 
-            <LinearLayout
-                android:layout_width="67dp"
-                android:layout_height="55dp"
-                android:orientation="vertical"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="16dp"
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="@drawable/rounded_edt">
                 <ImageView
-                    android:layout_width="33dp"
-                    android:layout_height="33dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="11dp"
-                    android:src="@drawable/google"></ImageView>
-            </LinearLayout>
+                    android:src="@drawable/google" />
+            </FrameLayout>
 
-            <LinearLayout
-                android:layout_width="67dp"
-                android:layout_height="55dp"
-                android:orientation="vertical"
-                android:layout_marginEnd="16dp"
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="@drawable/rounded_edt">
                 <ImageView
-                    android:layout_width="33dp"
-                    android:layout_height="33dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="11dp"
-                    android:src="@drawable/fb"></ImageView>
-            </LinearLayout>
+                    android:src="@drawable/fb" />
+            </FrameLayout>
 
-            <LinearLayout
-                android:layout_width="67dp"
-                android:layout_height="55dp"
-                android:orientation="vertical"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/rounded_edt">
-
-                <ImageView
-                    android:layout_width="66dp"
-                    android:layout_height="47dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="6dp"
-                    android:src="@drawable/apple"></ImageView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="67dp"
-                android:layout_height="55dp"
-                android:orientation="vertical"
-                android:layout_marginEnd="17dp"
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="@drawable/rounded_edt">
                 <ImageView
-                    android:layout_width="33dp"
-                    android:layout_height="33dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="11dp"
-                    android:src="@drawable/twitter"></ImageView>
-            </LinearLayout>
+                    android:src="@drawable/apple" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="60dp"
+                android:layout_height="50dp"
+                android:layout_marginHorizontal="6dp"
+                android:background="@drawable/rounded_edt">
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/twitter" />
+            </FrameLayout>
         </LinearLayout>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

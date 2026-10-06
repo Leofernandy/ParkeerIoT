@@ -23,7 +23,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 
 public class ProfileFragment extends Fragment {
 
-    private ImageView imvEditProfile;
+    private ImageView imvEditProfile, imageProfile;
     private LinearLayout llyMyVehicles, llyLogout, llyCS, llyHowUse, llyLanguage, llySetPin;
     private TextView txvFullname, txvEmail, txvPhone;
 
@@ -45,6 +45,7 @@ public class ProfileFragment extends Fragment {
 
         // === Inisialisasi View ===
         imvEditProfile = view.findViewById(R.id.imvEditProfile);
+        imageProfile = view.findViewById(R.id.imageProfile);
         llyMyVehicles = view.findViewById(R.id.llyMyVehicles);
         llyCS = view.findViewById(R.id.llyCS);
         llySetPin = view.findViewById(R.id.llySetPin);
@@ -111,10 +112,29 @@ public class ProfileFragment extends Fragment {
             String fullname = snapshot.getString("fullname");
             String email = snapshot.getString("email");
             String phone = snapshot.getString("phone");
+            String photoBase64 = snapshot.getString("photoBase64");
 
             txvFullname.setText(fullname != null ? fullname : "Guest");
             txvEmail.setText(email != null ? email : "-");
             txvPhone.setText(phone != null ? phone : "-");
+
+            // Tampilkan foto profil dari Base64
+            if (imageProfile != null) {
+                if (photoBase64 != null && !photoBase64.isEmpty()) {
+                    try {
+                        byte[] decodedBytes = android.util.Base64.decode(photoBase64, android.util.Base64.DEFAULT);
+                        android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                        if (bitmap != null) {
+                            imageProfile.setImageBitmap(bitmap);
+                        }
+                    } catch (Exception err) {
+                        err.printStackTrace();
+                        imageProfile.setImageResource(R.drawable.pp_default);
+                    }
+                } else {
+                    imageProfile.setImageResource(R.drawable.pp_default);
+                }
+            }
         });
     }
 

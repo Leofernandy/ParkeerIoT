@@ -227,9 +227,7 @@ public class BookActivity extends AppCompatActivity {
     }
 
     private void saveToFirebaseBeforeXendit(String uid) {
-        saveBookingData(uid, "pending", "UNPAID");
-
-        String url = "https://createinvoice-d2jn6f3etq-uc.a.run.app";
+        String url = com.example.parkeeriotapp.utils.Constants.ENDPOINT_CREATE_INVOICE;
         JSONObject params = new JSONObject();
         try {
             params.put("order_id", bookingId);
@@ -238,8 +236,14 @@ public class BookActivity extends AppCompatActivity {
 
         JsonObjectRequest req = new JsonObjectRequest(Request.Method.POST, url, params,
                 res -> {
+                    btnBook.setEnabled(true);
+                    btnBook.setText("Book");
                     try {
                         String invoiceUrl = res.getString("invoice_url");
+
+                        // PINDAHKAN KE SINI: Simpan ke Firebase HANYA JIKA Xendit sukses merespons
+                        saveBookingData(uid, "pending", "UNPAID");
+
                         Intent intent = new Intent(BookActivity.this, PaymentSuccessActivity.class);
                         putSuccessIntentData(intent);
                         intent.putExtra("invoiceUrl", invoiceUrl);
@@ -249,8 +253,23 @@ public class BookActivity extends AppCompatActivity {
                 },
                 err -> {
                     btnBook.setEnabled(true);
-                    Toast.makeText(this, "Xendit Error", Toast.LENGTH_SHORT).show();
+                    btnBook.setText("Book");
+                    String errorMsg = "Gagal membuat tagihan Xendit. Coba lagi.";
+                    if (err != null && err.networkResponse != null) {
+                        errorMsg += " (HTTP " + err.networkResponse.statusCode + ")";
+                    } else if (err instanceof com.android.volley.TimeoutError) {
+                        errorMsg = "Server sedang bangun dari sleep (Timeout). Silakan klik Book kembali.";
+                    }
+                    Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show();
                 });
+
+        // 60 detik timeout untuk menangani cold-start server gratis Render
+        req.setRetryPolicy(new com.android.volley.DefaultRetryPolicy(
+                60000,
+                2,
+                1.0f
+        ));
+
         requestQueue.add(req);
     }
 
@@ -270,6 +289,7 @@ public class BookActivity extends AppCompatActivity {
         data.put("payment_status", statusPayment);
         data.put("userId", uid);
         data.put("qrScanned", false);
+        data.put("plateScanned", false);
 
         bookingsRef.child(bookingId).setValue(data).addOnSuccessListener(unused -> {
             Map<String, Object> slotUpdate = new HashMap<>();
@@ -422,9 +442,21 @@ public class BookActivity extends AppCompatActivity {
             SimpleDateFormat f = new SimpleDateFormat("dd-MMM-yyyy HH:mm", Locale.ENGLISH);
             Date d1 = f.parse(edtTglMsk.getText() + " " + edtJamMsk.getText());
             Date d2 = f.parse(edtTglKlr.getText() + " " + edtJamKlr.getText());
+
             long diff = d2.getTime() - d1.getTime();
+
+            // TAMBAHAN VALIDASI
+            if (diff <= 0) {
+                btnBook.setText("WAKTU TIDAK VALID");
+                btnBook.setEnabled(false); // Kunci tombol
+                durasiMenitTerakhir = 0;
+                totalHargaTerakhir = 0;
+                return;
+            }
+
+            btnBook.setEnabled(true); // Buka kembali tombol jika valid
             long hours = (long) Math.ceil(TimeUnit.MILLISECONDS.toMinutes(diff) / 60.0);
-            if (hours <= 0) hours = 1;
+
             durasiMenitTerakhir = hours * 60;
             totalHargaTerakhir = (int) (hours * hargaPerJam);
             btnBook.setText("BOOK IDR " + totalHargaTerakhir);
